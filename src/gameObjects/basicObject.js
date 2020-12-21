@@ -44,14 +44,11 @@ async function createBaseObject(objInfo) {
         }
     })
 
-    console.log("Making DB object: " + names)
+    console.log("  -Making DB object: " + names)
     let obj = await basicObj.create({...objProps})
     await mongoose.connection.close()
     return obj._id
 }
-
-
-
 
 // Export the Obj
 module.exports = {

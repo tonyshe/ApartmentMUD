@@ -1,6 +1,6 @@
-const MongoClient = require('mongodb').MongoClient
 ObjectID = require('mongodb').ObjectID
 const { getObjByDbIdAndRoom } = require("./getObjectFunctions")
+const {mongoDbClientConnect} = require("../../backendFunctions/mongoHelpers")
 
 async function setObjectVisible(objDbId, roomName, visible) {
     /**
@@ -10,12 +10,10 @@ async function setObjectVisible(objDbId, roomName, visible) {
      * @return {Object} - Object that matches the DB id supplied
      */
     let [obj,collectionName] = await getObjByDbIdAndRoom(objDbId, roomName)
-
-    const url = "mongodb://127.0.0.1:27017/"  + roomName;
-    const client = new MongoClient(url, {useNewUrlParser: true, useUnifiedTopology: true})
-    await client.connect()
-    const database = client.db(roomName)
+    const [database,client] = await mongoDbClientConnect("mongodb://127.0.0.1:27017/", roomName)
+    
     database.collection(collectionName).updateOne(obj, {$set: {...obj, visible: visible}})
+    client.close()
     return obj
 }
 

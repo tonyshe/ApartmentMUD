@@ -1,9 +1,8 @@
 mongoose = require("mongoose")
-const MongoClient = require('mongodb').MongoClient;
 const getObjs = require("../objectFunctions/GetObjectFunctions")
 const {describeFunctions} = require("../describeFunctions/describeFunctions")
 
-async function examineObject(roomName, objName) {
+async function examineObject(roomName, userDbId, objName) {
     // Search all documents in all collections for a match. Create an array of matching objects
     let objs = await getObjs.getAllObjectsInRoom(roomName)
     let foundObjs = []

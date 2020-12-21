@@ -2,9 +2,9 @@ const app = require('express')();
 const http = require('http').createServer(app);
 const io = require('socket.io')(http);
 const { create } = require('domain');
-const { command } = require("../commandFunctions/command")
+const { command } = require("../gameFunctions/commandFunctions/command")
 const {createPerson, deletePerson} = require("../gameObjects/personObject")
-const {makeRandomWord} = require("../helperFunctions/gameHelpers")
+const {makeRandomWord} = require("../gameFunctions/helperFunctions/gameHelpers")
 
 async function setupSocket() {
     app.get('/', (req, res) => {
@@ -12,14 +12,11 @@ async function setupSocket() {
     });
     
     io.on('connection', (socket) => {
-        console.log('a user connected');
-
         socket.on('userId', async (userId) => {
-            console.log('User Id created: ' + userId)
+            console.log('User logon and Id created: ' + userId)
             socket.userId = userId
             socket.join('lobby')
             socket.room = "lobby"
-            console.log("lobby " + socket.userId)
             const randomName = makeRandomWord(6)
             await createPerson({
                 roomName: "adventureRoom", 
@@ -31,7 +28,7 @@ async function setupSocket() {
 
         socket.on('chat message', async (msg) => {
             // msg is an array of [user submitted message, userid]
-            let returnMsg = await command(msg[0])
+            let returnMsg = await command(msg[0], socket.userId)
             if (returnMsg) io.emit('chat message', returnMsg);
         });
 
@@ -44,7 +41,9 @@ async function setupSocket() {
     });
 
     http.listen(3000, () => {
-        console.log('listening on *:3000');
+        console.log('-----')
+        console.log('listening on *:3000')
+        console.log('-----')
     });
 }
 

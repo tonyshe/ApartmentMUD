@@ -1,42 +1,61 @@
 // imports
-const mongoose = require("mongoose");
 const MongoClient = require('mongodb').MongoClient;
-const scriptHelpers = require("./helperFunctions/scriptHelpers")
+const scriptHelpers = require("./gameFunctions/helperFunctions/scriptHelpers")
 const { setupSocket } = require("./socket/socketSetup")
 
 // game objects
-const { examineObject } = require('./actions/examineObject')
 const { createBaseObject } = require("./gameObjects/basicObject");
 const { createRoomObject } = require("./gameObjects/roomObject")
-const { createPerson, deletePerson } = require("./gameObjects/personObject")
 
 // aux functions
-const { sleep } = require('./helperFunctions/textHelpers')
+const { sleep } = require('./gameFunctions/helperFunctions/textHelpers')
 
 async function dropAllRoomDbs(roomDbs) {
 	const baseUrl = "mongodb://127.0.0.1:27017/"
 	for (let i = 0; i < roomDbs.length; i++) {
 		let url = baseUrl + roomDbs[i]
-		MongoClient.connect(url, { useNewUrlParser: true, useUnifiedTopology: true },
-			function (err, db) {
-				if (err) throw err;
-				var dbo = db.db(roomDbs[i]);
-				dbo.dropDatabase(function (err, delOK) {
-					if (err) throw err;
-					if (delOK) console.log("Collection deleted: " + roomDbs[i]);
-					db.close();
-				});
-			}
-		)
+		let client = await MongoClient.connect(url, { useNewUrlParser: true, useUnifiedTopology: true })
+		let dbo = client.db(roomDbs[i]);
+		dbo.dropDatabase(async function (err, delOK) {
+			if (err) throw err;
+			if (delOK) console.log("  -Collection deleted: " + roomDbs[i]);
+			await client.close();
+		})
 	}
 }
 
-console.log("Cleaning up databases")
-const roomDbs = ['userIdMap', 'adventureRoom', 'orphanedObjs']
-dropAllRoomDbs(roomDbs)
+async function dropAllUserInventories() {
+	const baseUrl = "mongodb://127.0.0.1:27017/"
+	let client = await MongoClient.connect(baseUrl, { useNewUrlParser: true, useUnifiedTopology: true })
+	let db_list = await client.db().admin().listDatabases()
+	await client.close()
+	let db_filtered_list = db_list.databases
+	db_filtered_list = db_filtered_list.filter((item) => { return item.name.includes("userInventory") })
+		.map((db) => { return db.name })
+
+	for (let i = 0; i < db_filtered_list.length; i++) {
+		let url = baseUrl + db_filtered_list[i]
+		let client = await MongoClient.connect(url, { useNewUrlParser: true, useUnifiedTopology: true })
+		let dbo = client.db(db_filtered_list[i]);
+		dbo.dropDatabase(async function (err, delOK) {
+			if (err) throw err;
+			if (delOK) console.log("  -Collection deleted: " + db_filtered_list[i]);
+			await client.close();
+		})
+	}
+}
 
 // Setup environment
 async function envSetup() {
+	console.log("Cleaning up user inventories")
+	await dropAllUserInventories()
+	// Clean up databases
+	console.log("Cleaning up databases")
+	const roomDbs = ['userIdMap', 'adventureRoom', 'orphanedObjs']
+	await dropAllRoomDbs(roomDbs)
+
+
+	console.log("Creating world...")
 	// Make a room
 	await createRoomObject({
 		roomName: "adventureRoom",
@@ -52,7 +71,6 @@ async function envSetup() {
 		description: "A yummy sandwich.",
 		takeable: true
 	})
-
 	await createBaseObject({
 		roomName: "adventureRoom",
 		names: ["book", "novel"],
