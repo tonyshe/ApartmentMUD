@@ -1,6 +1,5 @@
 mongoose = require("mongoose")
 ObjectID = require('mongodb').ObjectID
-const MongoClient = require('mongodb').MongoClient;
 const {mongoDbClientConnect} = require("../../backendFunctions/mongoHelpers")
 
 async function deleteUserInRoomById(userDbId, roomName) {

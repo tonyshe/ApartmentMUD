@@ -1,4 +1,3 @@
-const MongoClient = require('mongodb').MongoClient
 ObjectID = require('mongodb').ObjectID
 const { getObjByDbIdAndRoom } = require("./getObjectFunctions")
 const {mongoDbClientConnect} = require("../../backendFunctions/mongoHelpers")
