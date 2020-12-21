@@ -72,11 +72,19 @@ async function envSetup() {
 		description: "A yummy sandwich.",
 		takeable: true
 	})
+
+	await createBaseObject({
+		roomName: "adventureRoom",
+		names: ["popsicle", "ice cream", "food"],
+		description: "A melting popsicle.",
+		takeable: true
+	})
+
 	await createBaseObject({
 		roomName: "adventureRoom",
 		names: ["coffee table", "table", "ikea table"],
 		description: "A small IKEA coffee table.",
-		takeable: true
+		takeable: false
 	})
 
 	// socketsss

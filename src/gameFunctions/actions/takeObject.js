@@ -13,9 +13,23 @@ async function takeObject(roomName, userId, objName ) {
         }
     }
 
+    let invObjs = await getObjs.getAllObjectsInInventory(userId)
+    let foundInvObjs = []
+    for (let i=0; i<invObjs.length; i++) {
+        if (invObjs[i].names.includes(objName)) {
+            foundInvObjs.push(invObjs[i])
+        }
+    }
+
+
+
     // Logic depending on how many objects are found
     if (foundObjs.length === 0) {
-        return "No such thing exists."
+        if (foundInvObjs.length >= 1) {
+            return "You already have that!"
+        } else {
+            return "No such thing exists."
+        }
     } else if (foundObjs.length > 1) {
         return 'There are more than one thing by the name ' + '"' + objName + '." Please be more specific as to which one you mean.'
     } else if (foundObjs.length === 1) {

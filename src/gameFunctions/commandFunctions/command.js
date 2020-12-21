@@ -45,7 +45,7 @@ async function executeCommandArray(comArr, userCom, userId, roomName) {
 
     // take commands
     if (action === "take" && comArr[1]) {
-        let output = await takeObject(roomName, userDbId, comArr[1])
+        let output = await takeObject(roomName, userId, comArr[1])
         return output
     } else if (action === "take" && comArr.length === 1) {
         return "Please specify something to take."
