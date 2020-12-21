@@ -20,18 +20,42 @@ async function dropAllRoomDbs(roomDbs) {
 			if (err) throw err;
 			if (delOK) console.log("  -Collection deleted: " + roomDbs[i]);
 			await client.close();
-		});
+		})
+	}
+}
+
+async function dropAllUserInventories() {
+	const baseUrl = "mongodb://127.0.0.1:27017/"
+	let client = await MongoClient.connect(baseUrl, { useNewUrlParser: true, useUnifiedTopology: true })
+	let db_list = await client.db().admin().listDatabases()
+	await client.close()
+	let db_filtered_list = db_list.databases
+	db_filtered_list = db_filtered_list.filter((item) => { return item.name.includes("userInventory") })
+		.map((db) => { return db.name })
+
+	for (let i = 0; i < db_filtered_list.length; i++) {
+		let url = baseUrl + db_filtered_list[i]
+		let client = await MongoClient.connect(url, { useNewUrlParser: true, useUnifiedTopology: true })
+		let dbo = client.db(db_filtered_list[i]);
+		dbo.dropDatabase(async function (err, delOK) {
+			if (err) throw err;
+			if (delOK) console.log("  -Collection deleted: " + db_filtered_list[i]);
+			await client.close();
+		})
 	}
 }
 
 // Setup environment
 async function envSetup() {
+	console.log("Cleaning up user inventories")
+	await dropAllUserInventories()
 	// Clean up databases
 	console.log("Cleaning up databases")
 	const roomDbs = ['userIdMap', 'adventureRoom', 'orphanedObjs']
 	await dropAllRoomDbs(roomDbs)
 
-	 console.log("Creating world...")
+
+	console.log("Creating world...")
 	// Make a room
 	await createRoomObject({
 		roomName: "adventureRoom",
@@ -53,7 +77,7 @@ async function envSetup() {
 		description: "A hardback copy of Blowjobs: An Oral History.",
 		takeable: true
 	})
-	
+
 	// socketsss
 	await setupSocket()
 }

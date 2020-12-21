@@ -1,5 +1,6 @@
 mongoose = require("mongoose")
 const getObjs = require("../objectFunctions/GetObjectFunctions")
+const {moveObjectToAnotherDb} = require("../objectFunctions/moveObjectFunctions")
 const {setObjectVisible} = require("../objectFunctions/setObjectFunctions")
 
 async function takeObject(roomName, userId, objName ) {
@@ -20,9 +21,13 @@ async function takeObject(roomName, userId, objName ) {
     } else if (foundObjs.length === 1) {
         // If only one object is found, run through the take functions
         obj = foundObjs[0]
-        let out = await setObjectVisible(obj._id, roomName, false)
-        console.log(out)
-        return
+        //let out = await setObjectVisible(obj._id, roomName, false)
+        if (obj.takeable) {
+            await moveObjectToAnotherDb(obj._id, roomName, "userInventory_" + userId)
+            return 'You take the ' + obj.names[0] + '.'
+        } else {
+            return 'You cannot take that.'
+        }
     }
 }
 
