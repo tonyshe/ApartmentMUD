@@ -19,7 +19,7 @@ async function setupSocket() {
             socket.room = "lobby"
             const randomName = makeRandomWord(6)
             await createPerson({
-                roomName: "adventureRoom", 
+                roomName: "mud_bedroom", 
                 names: [randomName, "person"], 
                 description: "It's your friend " + randomName + ".", 
                 userId: userId
