@@ -16,6 +16,10 @@ async function getAllCollectionsInRoom(roomName) {
     return collectionNameList
 }
 
+async function getAllDoorsInRoom(roomName) {
+
+}
+
 async function getAllObjectsInRoom(roomName) {
     /**
      * Takes a room and returns an array of all objects in the room
@@ -40,6 +44,7 @@ async function getAllObjectsInRoomAndInventory(roomName, userId) {
      * Takes a room and returns an array of all objects in the room
      * @param {String} roomName - name of the room
      * @param {[Object]} Array of objects inside of the room
+     * @param {[String]} Array of objects in room and invetory
      */
     // Returns a list of all objects in a room
     console.log(roomName)
