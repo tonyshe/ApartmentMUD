@@ -1,14 +1,15 @@
 const { examineObject } = require('../actions/examineObject')
 const { takeObject } = require('../actions/takeObject')
 const textHelpers = require("../helperFunctions/textHelpers")
-const {getUserDbIdByUserId} = require("../objectFunctions/getObjectFunctions")
+const getObjs = require("../objectFunctions/getObjectFunctions")
 
 async function command(userCom, userId) {
     // processes the user command
     if (userCom.trim() === "") {
         return false
     } else {
-        const commandArray = await splitCommands(userCom, userId, "adventureRoom")
+        let userRoom = await getObjs.getUserRoomByUserId(userId)
+        const commandArray = await splitCommands(userCom, userId, userRoom)
         return commandArray
     }
 }
@@ -33,7 +34,7 @@ async function executeCommandArray(comArr, userCom, userId, roomName) {
      * @param {String} roomName - name of the room that the user is in
      */
     const action = comArr[0]
-    const userDbId = await getUserDbIdByUserId(userId)
+    const userDbId = await getObjs.getUserDbIdByUserId(userId)
     // examine commands
     if (action === "x" | action === "examine" && comArr[1]) {
         const objString = userCom.substr(userCom.indexOf(" ") + 1) // Need to do this to convert multi-word descriptions

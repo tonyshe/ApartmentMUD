@@ -21,8 +21,6 @@ async function takeObject(roomName, userId, objName ) {
         }
     }
 
-
-
     // Logic depending on how many objects are found
     if (foundObjs.length === 0) {
         if (foundInvObjs.length >= 1) {

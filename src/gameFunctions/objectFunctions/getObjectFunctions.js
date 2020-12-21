@@ -42,6 +42,7 @@ async function getAllObjectsInRoomAndInventory(roomName, userId) {
      * @param {[Object]} Array of objects inside of the room
      */
     // Returns a list of all objects in a room
+    console.log(roomName)
     let objCollections = await getAllCollectionsInRoom(roomName)
     const [database, client] = await mongoDbClientConnect("mongodb://127.0.0.1:27017/", roomName)
     let objs = []

@@ -22,7 +22,7 @@ const lookFunctions = {
         }
         return 
     },
-    "alexRoomLook": () => {
+    "bedroomLook": () => {
         return "Alex's main studio room. There is a bed in the corner, with a nightstand next to it. Along the wall is a brown leather couch. In the middle of the room is a coffee table and a large bean bag chair. There are a few windows on the opposite wall and a small book shelf. Around the corner is the kitchen area. To the other side is the entrance to the walk-in closet and bathroom."
     }
 }
