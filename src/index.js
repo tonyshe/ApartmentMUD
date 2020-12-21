@@ -25,12 +25,13 @@ async function dropAllRoomDbs(roomDbs) {
 }
 
 async function dropAllUserInventories() {
+	// ugh basically does the same thing as drop all room dbs but this parses the db list for the string "userInventory_"
 	const baseUrl = "mongodb://127.0.0.1:27017/"
 	let client = await MongoClient.connect(baseUrl, { useNewUrlParser: true, useUnifiedTopology: true })
 	let db_list = await client.db().admin().listDatabases()
 	await client.close()
 	let db_filtered_list = db_list.databases
-	db_filtered_list = db_filtered_list.filter((item) => { return item.name.includes("userInventory") })
+	db_filtered_list = db_filtered_list.filter((item) => { return item.name.includes("userInventory_") })
 		.map((db) => { return db.name })
 
 	for (let i = 0; i < db_filtered_list.length; i++) {
@@ -73,8 +74,8 @@ async function envSetup() {
 	})
 	await createBaseObject({
 		roomName: "adventureRoom",
-		names: ["book", "novel"],
-		description: "A hardback copy of Blowjobs: An Oral History.",
+		names: ["coffee table", "table", "ikea table"],
+		description: "A small IKEA coffee table.",
 		takeable: true
 	})
 

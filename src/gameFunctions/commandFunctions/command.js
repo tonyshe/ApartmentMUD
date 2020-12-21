@@ -20,16 +20,24 @@ async function splitCommands(userCom, userId, roomName) {
     userCom = userCom.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g,"");   //remove punctuation
     userCom = userCom.replace(" the "," ").replace(" an ", " ").replace(" a ", " ");  //remove articles
     const splitCommands = userCom.split(/\s+/); //split command to word array
-    let response = await executeCommandArray(splitCommands, userId, roomName)
+    let response = await executeCommandArray(splitCommands, userCom, userId, roomName)
     return response
 }
 
-async function executeCommandArray(comArr, userId, roomName) {
+async function executeCommandArray(comArr, userCom, userId, roomName) {
+    /**
+     * Huge messy thing than handles user commands. will need to modularize this soon
+     * @param {[String]} comArr - Array of command strings 
+     * @param {String} userCom - Full text of user command
+     * @param {String} userId - user id (not user db id)
+     * @param {String} roomName - name of the room that the user is in
+     */
     const action = comArr[0]
     const userDbId = await getUserDbIdByUserId(userId)
     // examine commands
     if (action === "x" | action === "examine" && comArr[1]) {
-        let output = await examineObject(roomName, userDbId, comArr[1])
+        const objString = userCom.substr(userCom.indexOf(" ") + 1) // Need to do this to convert multi-word descriptions
+        let output = await examineObject(roomName, userDbId, objString)
         return output
     } else if (action === "x" | action === "examine" && comArr.length === 1) {
         return "Please specify something to examine."

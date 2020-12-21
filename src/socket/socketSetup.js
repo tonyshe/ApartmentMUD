@@ -21,7 +21,7 @@ async function setupSocket() {
             await createPerson({
                 roomName: "adventureRoom", 
                 names: [randomName, "person"], 
-                description: "It's your friend " + randomName, 
+                description: "It's your friend " + randomName + ".", 
                 userId: userId
             })
         });

@@ -73,6 +73,7 @@
 
                 // sends an array of [user command string, userId]
                 socket.emit('chat message', [$('#m').val(), userId]);
+                $('#messages').append($('<li>').text($('#m').val()));
                 $('#m').val('');
                 return false;
             });
