@@ -1,42 +1,37 @@
 // imports
-const mongoose = require("mongoose");
 const MongoClient = require('mongodb').MongoClient;
-const scriptHelpers = require("./helperFunctions/scriptHelpers")
+const scriptHelpers = require("./gameFunctions/helperFunctions/scriptHelpers")
 const { setupSocket } = require("./socket/socketSetup")
 
 // game objects
-const { examineObject } = require('./actions/examineObject')
 const { createBaseObject } = require("./gameObjects/basicObject");
 const { createRoomObject } = require("./gameObjects/roomObject")
-const { createPerson, deletePerson } = require("./gameObjects/personObject")
 
 // aux functions
-const { sleep } = require('./helperFunctions/textHelpers')
+const { sleep } = require('./gameFunctions/helperFunctions/textHelpers')
 
 async function dropAllRoomDbs(roomDbs) {
 	const baseUrl = "mongodb://127.0.0.1:27017/"
 	for (let i = 0; i < roomDbs.length; i++) {
 		let url = baseUrl + roomDbs[i]
-		MongoClient.connect(url, { useNewUrlParser: true, useUnifiedTopology: true },
-			function (err, db) {
-				if (err) throw err;
-				var dbo = db.db(roomDbs[i]);
-				dbo.dropDatabase(function (err, delOK) {
-					if (err) throw err;
-					if (delOK) console.log("Collection deleted: " + roomDbs[i]);
-					db.close();
-				});
-			}
-		)
+		let client = await MongoClient.connect(url, { useNewUrlParser: true, useUnifiedTopology: true })
+		let dbo = client.db(roomDbs[i]);
+		dbo.dropDatabase(async function (err, delOK) {
+			if (err) throw err;
+			if (delOK) console.log("  -Collection deleted: " + roomDbs[i]);
+			await client.close();
+		});
 	}
 }
 
-console.log("Cleaning up databases")
-const roomDbs = ['userIdMap', 'adventureRoom', 'orphanedObjs']
-dropAllRoomDbs(roomDbs)
-
 // Setup environment
 async function envSetup() {
+	// Clean up databases
+	console.log("Cleaning up databases")
+	const roomDbs = ['userIdMap', 'adventureRoom', 'orphanedObjs']
+	await dropAllRoomDbs(roomDbs)
+
+	 console.log("Creating world...")
 	// Make a room
 	await createRoomObject({
 		roomName: "adventureRoom",
@@ -52,14 +47,13 @@ async function envSetup() {
 		description: "A yummy sandwich.",
 		takeable: true
 	})
-
 	await createBaseObject({
 		roomName: "adventureRoom",
 		names: ["book", "novel"],
 		description: "A hardback copy of Blowjobs: An Oral History.",
 		takeable: true
 	})
-
+	
 	// socketsss
 	await setupSocket()
 }

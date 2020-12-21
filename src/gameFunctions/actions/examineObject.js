@@ -1,9 +1,9 @@
 mongoose = require("mongoose")
 const MongoClient = require('mongodb').MongoClient;
 const getObjs = require("../objectFunctions/GetObjectFunctions")
-const {setObjectVisible} = require("../objectFunctions/setObjectFunctions")
+const {describeFunctions} = require("../describeFunctions/describeFunctions")
 
-async function takeObject(roomName, objName) {
+async function examineObject(roomName, userDbId, objName) {
     // Search all documents in all collections for a match. Create an array of matching objects
     let objs = await getObjs.getAllObjectsInRoom(roomName)
     let foundObjs = []
@@ -21,13 +21,10 @@ async function takeObject(roomName, objName) {
     } else if (foundObjs.length === 1) {
         // If only one object is found, use the custom describe() functions from ../describeFunctions
         obj = foundObjs[0]
-        console.log(obj._id)
-        let out = await setObjectVisible(obj._id, roomName, false)
-        console.log(out)
-        return
+        return describeFunctions[obj.describe](obj)
     }
 }
 
 module.exports = {
-    takeObject
+    examineObject
 }
