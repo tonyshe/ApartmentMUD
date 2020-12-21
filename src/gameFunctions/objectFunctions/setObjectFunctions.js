@@ -1,5 +1,5 @@
 ObjectID = require('mongodb').ObjectID
-const { getObjByDbIdAndRoom } = require("./getObjectFunctions")
+const getObjs = require("./getObjectFunctions")
 const {mongoDbClientConnect} = require("../../backendFunctions/mongoHelpers")
 
 async function setObjectPropertyByDbIdAndRoomName(objDbId, roomName, property, value) {
@@ -10,13 +10,21 @@ async function setObjectPropertyByDbIdAndRoomName(objDbId, roomName, property, v
      * @param {Any} - value toi set
      * @return {Object} - Object that matches the DB id supplied
      */
-    let [obj,collectionName] = await getObjByDbIdAndRoom(objDbId, roomName)
+    let [obj,collectionName] = await getObjs.getObjByDbIdAndRoom(objDbId, roomName)
     const [database,client] = await mongoDbClientConnect("mongodb://127.0.0.1:27017/", roomName)
     await database.collection(collectionName).updateOne(obj, {$set: {...obj, [property]: value}})
     await client.close()
     return obj
 }
 
+async function setUserRoomByUserId(userId, newRoom) {
+    const userObj = await getObjs.getUserMapObjByUserId(userId)
+    const [database,client] = await mongoDbClientConnect("mongodb://127.0.0.1:27017/", "userIdMap")
+    await database.collection("usermapids").updateOne(userObj, {$set: {...userObj, "userRoom": newRoom}})
+    await client.close()
+}
+
 module.exports = {
-    setObjectPropertyByDbIdAndRoomName
+    setObjectPropertyByDbIdAndRoomName,
+    setUserRoomByUserId
 }

@@ -2,9 +2,8 @@ mongoose = require("mongoose")
 const getObjs = require("../objectFunctions/GetObjectFunctions")
 const {describeFunctions} = require("../describeFunctions/describeFunctions")
 
-async function examineObject(roomName, userDbId, objName) {
+async function examineObject(roomName, userId, objName) {
     // Search all documents in all collections for a match. Create an array of matching objects
-    const userId = await getObjs.getUserIdByUserDbId(userDbId)
     let objs = await getObjs.getAllObjectsInRoomAndInventory(roomName, userId)
     let foundObjs = []
     for (let i=0; i<objs.length; i++) {

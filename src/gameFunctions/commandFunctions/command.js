@@ -1,5 +1,6 @@
 const { examineObject } = require('../actions/examineObject')
 const { takeObject } = require('../actions/takeObject')
+const { goDoor } = require('../actions/goDoor')
 const textHelpers = require("../helperFunctions/textHelpers")
 const getObjs = require("../objectFunctions/getObjectFunctions")
 
@@ -17,9 +18,9 @@ async function command(userCom, userId) {
 async function splitCommands(userCom, userId, roomName) {
     // splits a user input into an array of strings
     userCom = userCom.toLowerCase(); //to lower case
-    userCom = userCom.replace(/ +(?= )/g,'').trim(); //convert multiple space to one. trim whitespace
-    userCom = userCom.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g,"");   //remove punctuation
-    userCom = userCom.replace(" the "," ").replace(" an ", " ").replace(" a ", " ");  //remove articles
+    userCom = userCom.replace(/ +(?= )/g, '').trim(); //convert multiple space to one. trim whitespace
+    userCom = userCom.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, "");   //remove punctuation
+    userCom = userCom.replace(" the ", " ").replace(" an ", " ").replace(" a ", " ");  //remove articles
     const splitCommands = userCom.split(/\s+/); //split command to word array
     let response = await executeCommandArray(splitCommands, userCom, userId, roomName)
     return response
@@ -34,24 +35,33 @@ async function executeCommandArray(comArr, userCom, userId, roomName) {
      * @param {String} roomName - name of the room that the user is in
      */
     const action = comArr[0]
-    const userDbId = await getObjs.getUserDbIdByUserId(userId)
     // examine commands
     if (action === "x" | action === "examine" && comArr[1]) {
         const objString = userCom.substr(userCom.indexOf(" ") + 1) // Need to do this to convert multi-word descriptions
-        let output = await examineObject(roomName, userDbId, objString)
+        let output = await examineObject(roomName, userId, objString)
         return output
     } else if (action === "x" | action === "examine" && comArr.length === 1) {
         return "Please specify something to examine."
-    } 
+    }
 
     // take commands
     if (action === "take" && comArr[1]) {
-        let output = await takeObject(roomName, userId, comArr[1])
+        const objString = userCom.substr(userCom.indexOf(" ") + 1) // Need to do this to convert multi-word descriptions
+        let output = await takeObject(roomName, userId, objString)
         return output
     } else if (action === "take" && comArr.length === 1) {
         return "Please specify something to take."
-    } 
-        
+    }
+
+    // take commands
+    if (action === "go" && comArr[1]) {
+        const objString = userCom.substr(userCom.indexOf(" ") + 1) // Need to do this to convert multi-word descriptions
+        let output = await goDoor(roomName, userId, objString)
+        return output
+    } else if (action === "go" && comArr.length === 1) {
+        return "Please specify where to go."
+    }
+
     return textHelpers.capitalizeFirstLetter(comArr[0] + " is not a relevant command right now.")
 }
 

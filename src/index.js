@@ -85,7 +85,7 @@ async function envSetup() {
 	await createRoomObject(
 		{
 			roomName: "mud_bedroom",
-			names: ['bedroom', 'room'],
+			names: ['bedroom','room'],
 			description: "A simple four-sided room and shag carpet.",
 			look: 'bedroomLook'
 		}
@@ -93,8 +93,8 @@ async function envSetup() {
 	await createRoomObject(
 		{
 			roomName: "mud_hallway",
-			names: ['hallway', 'corridor'],
-			description: "Hardwood floors and white painted walls. Located on the top floor of an apartment building on the corner of Howell and 12th.",
+			names: ['hallway', 'corridor', 'hall'],
+			description: "A small hallway connecting the bedroom, stairs, and bathroom.",
 			look: 'bedroomLook'
 		}
 	)

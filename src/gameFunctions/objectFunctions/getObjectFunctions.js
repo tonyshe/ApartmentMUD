@@ -17,7 +17,14 @@ async function getAllCollectionsInRoom(roomName) {
 }
 
 async function getAllDoorsInRoom(roomName) {
-
+    /**
+     * Gets all the doors in a room
+     * @param {String} roomName - Name of the room
+     * @return {[Object]} - returns a list of door objects
+     */
+    const [database, client] = await mongoDbClientConnect("mongodb://127.0.0.1:27017/", roomName)
+    let doors = await database.collection("doors").find().toArray()
+    return doors
 }
 
 async function getAllObjectsInRoom(roomName) {
@@ -47,7 +54,6 @@ async function getAllObjectsInRoomAndInventory(roomName, userId) {
      * @param {[String]} Array of objects in room and invetory
      */
     // Returns a list of all objects in a room
-    console.log(roomName)
     let objCollections = await getAllCollectionsInRoom(roomName)
     const [database, client] = await mongoDbClientConnect("mongodb://127.0.0.1:27017/", roomName)
     let objs = []
@@ -153,6 +159,19 @@ async function getUserIdByUserDbId(userDbId) {
     return x.userId
 }
 
+async function getUserMapObjByUserId(userId) {
+    /**
+     * Gets the user map object when provided a userId
+     * @param {string} userId - user id of the user. Makes sense
+     * @return - user map obj. this one is pretty straightforward 
+     */
+    const [database,client] = await mongoDbClientConnect("mongodb://127.0.0.1:27017/", "userIdMap")
+    const collection = database.collection('usermapids')
+    let x = await collection.findOne({ userId: userId })
+    client.close()
+    return x
+}
+
 async function getUserRoomByUserId(userId) {
     /**
      * Takes a user ID string and return the roomName associated with
@@ -168,6 +187,7 @@ async function getUserRoomByUserId(userId) {
 
 module.exports = {
     getAllCollectionsInRoom,
+    getAllDoorsInRoom,
     getAllImportantObjectsInRoom,
     getAllObjectsInInventory,
     getAllObjectsInRoom,
@@ -175,5 +195,6 @@ module.exports = {
     getObjByDbIdAndRoom,
     getUserDbIdByUserId,
     getUserIdByUserDbId,
+    getUserMapObjByUserId,
     getUserRoomByUserId
 }
