@@ -102,12 +102,12 @@ async function envSetup() {
 	// Make doors
 	await createDoorObjectPair(
 		{
-			names: ['door', 'bedroom door', 'hallway'],
+			names: ['door', 'hallway', 'bedroom door', 'exit'],
 			room: "mud_bedroom",
 			description: "A door to the hallway.",
 		},
 		{
-			names: ['bedroom', 'bedroom door', 'door'],
+			names: ['door', 'bedroom', 'bedroom door'],
 			room: "mud_hallway",
 			description: "A door to the bedroom.",
 		}
