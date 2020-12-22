@@ -2,6 +2,7 @@ mongoose = require("mongoose")
 const { setObjectPropertyByDbIdAndRoomName } = require("../gameFunctions/objectFunctions/setObjectFunctions")
 const { baseObjectSchemaStructure } = require("./baseObject")
 
+// Additional door object schema to add onto base object schema 
 let doorObjectSchemaAddons = {
     toRoom: { type: String },
     open: { type: Boolean },
@@ -15,7 +16,6 @@ const doorObjectSchema = new mongoose.Schema({
 });
 
 collectionName = "door"
-
 const doorObj = mongoose.model(collectionName, doorObjectSchema);
 
 async function createDoorObjectPair(doorA, doorB) {
@@ -30,16 +30,16 @@ async function createDoorObjectPair(doorA, doorB) {
     })
 
     await setObjectPropertyByDbIdAndRoomName(
-        doorAObj._id,
-        doorAObj.roomName,
-        "linkedDoor",
-        String(doorBObj._id)
+        objDbId = doorAObj._id,
+        roomName = doorAObj.roomName,
+        property = "linkedDoor",
+        value = String(doorBObj._id)
     )
     await setObjectPropertyByDbIdAndRoomName(
-        doorAObj._id,
-        doorAObj.roomName,
-        "toRoom",
-        String(doorBObj.roomName)
+        objDbId = doorAObj._id,
+        roomName = doorAObj.roomName,
+        property = "toRoom",
+        value = String(doorBObj.roomName)
     )
 }
 
@@ -60,7 +60,8 @@ async function createDoorObject(objInfo) {
         important = false,
         takeable = false,
         description = "It's either indescribable or I forgot to write a description for this...",
-        describe = 'baseDescribe'
+        describe = 'baseDescribe',
+        visible = true
     } = objInfo
 
     objProps = {
@@ -73,7 +74,8 @@ async function createDoorObject(objInfo) {
         important: important,
         takeable: takeable,
         description: description,
-        describe: describe
+        describe: describe,
+        visible: visible
     }
 
     const url = "mongodb://127.0.0.1:27017/" + roomName

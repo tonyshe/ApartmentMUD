@@ -1,5 +1,6 @@
 ObjectID = require('mongodb').ObjectID
 const getObjs = require("./getObjectFunctions")
+const getUsers = require("../userFunctions/getUserFunctions")
 const {mongoDbClientConnect} = require("../../backendFunctions/mongoHelpers")
 
 async function setObjectPropertyByDbIdAndRoomName(objDbId, roomName, property, value) {
@@ -18,7 +19,7 @@ async function setObjectPropertyByDbIdAndRoomName(objDbId, roomName, property, v
 }
 
 async function setUserRoomByUserId(userId, newRoom) {
-    const userObj = await getObjs.getUserMapObjByUserId(userId)
+    const userObj = await getUsers.getUserMapObjByUserId(userId)
     const [database,client] = await mongoDbClientConnect("mongodb://127.0.0.1:27017/", "userIdMap")
     await database.collection("usermapids").updateOne(userObj, {$set: {...userObj, "userRoom": newRoom}})
     await client.close()

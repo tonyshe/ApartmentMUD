@@ -1,15 +1,17 @@
 const { examineObject } = require('../actions/examineObject')
 const { takeObject } = require('../actions/takeObject')
+const { putObject } = require('../actions/putObject')
 const { goDoor } = require('../actions/goDoor')
 const textHelpers = require("../helperFunctions/textHelpers")
 const getObjs = require("../objectFunctions/getObjectFunctions")
+const getUsers = require("../userFunctions/getUserFunctions")
 
 async function command(userCom, userId) {
     // processes the user command
     if (userCom.trim() === "") {
         return false
     } else {
-        let userRoom = await getObjs.getUserRoomByUserId(userId)
+        let userRoom = await getUsers.getUserRoomByUserId(userId)
         const commandArray = await splitCommands(userCom, userId, userRoom)
         return commandArray
     }
@@ -38,7 +40,7 @@ async function executeCommandArray(comArr, userCom, userId, roomName) {
     // examine commands
     if (action === "x" | action === "examine" && comArr[1]) {
         const objString = userCom.substr(userCom.indexOf(" ") + 1) // Need to do this to convert multi-word descriptions
-        let output = await examineObject(roomName, userId, objString)
+        const output = await examineObject(roomName, userId, objString)
         return output
     } else if (action === "x" | action === "examine" && comArr.length === 1) {
         return "Please specify something to examine."
@@ -56,10 +58,37 @@ async function executeCommandArray(comArr, userCom, userId, roomName) {
     // take commands
     if (action === "go" && comArr[1]) {
         const objString = userCom.substr(userCom.indexOf(" ") + 1) // Need to do this to convert multi-word descriptions
-        let output = await goDoor(roomName, userId, objString)
+        const output = await goDoor(roomName, userId, objString)
         return output
     } else if (action === "go" && comArr.length === 1) {
         return "Please specify where to go."
+    }
+
+    // put commands
+    const putActions = ["put", "set", "place"]
+    if (putActions.includes(action) && comArr[1]) {
+        let putObj = userCom.match(/(?:put|set|place) (.*?) (?:on|in|inside|atop)/); //the object being moved
+        if (putObj == null) {
+            return 'Please specify where to ' + action + ' that.'
+        }
+        else {
+            putObj = putObj[1]
+            const newContainerString = userCom.match(/(?:put|set|place) (.*?) (?:on|in|inside|atop) (.*)/); //the object that will contain putObj
+            const splitPuts = userCom.split(/\s+/);
+            const allowedPrepositions = ['in', 'on', 'inside', 'atop']
+            const preposition = splitPuts[splitPuts.length - 1]
+            if (newContainerString == null && allowedPrepositions.includes(preposition)) {
+                return 'Please specify where to ' + action + ' that '+ preposition + '.';
+            } else if (newContainerString == null && !allowedPrepositions.includes(preposition)) {
+                return 'Please specify where to ' + action + ' that.'
+            } else {
+                const containerObj = newContainerString[2]
+                const output = await putObject(roomName, userId, putObj, containerObj)
+                return output
+            }
+        }
+    } else if (putActions.includes(action) && comArr.length === 1){
+        return "Please specify something to " + action + "."
     }
 
     return textHelpers.capitalizeFirstLetter(comArr[0] + " is not a relevant command right now.")

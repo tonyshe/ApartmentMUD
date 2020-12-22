@@ -2,7 +2,8 @@ const getObjs = require("../objectFunctions/GetObjectFunctions")
 const textHelpers = require("../helperFunctions/textHelpers")
 
 const describeFunctions = {
-    "baseDescribe": (obj) => {return obj.description}
+    "baseDescribe": (obj) => {return obj.description},
+    "containerDescribe": (obj) => {return obj.description}
 }
 
 const lookFunctions = {

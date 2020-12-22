@@ -5,21 +5,8 @@ const {setObjectVisible} = require("../objectFunctions/setObjectFunctions")
 
 async function takeObject(roomName, userId, objName ) {
     // Search all documents in all collections for a match. Create an array of matching objects
-    let objs = await getObjs.getAllObjectsInRoom(roomName)
-    let foundObjs = []
-    for (let i=0; i<objs.length; i++) {
-        if (objs[i].names.includes(objName)) {
-            foundObjs.push(objs[i])
-        }
-    }
-
-    let invObjs = await getObjs.getAllObjectsInInventory(userId)
-    let foundInvObjs = []
-    for (let i=0; i<invObjs.length; i++) {
-        if (invObjs[i].names.includes(objName)) {
-            foundInvObjs.push(invObjs[i])
-        }
-    }
+    let foundObjs = await getObjs.getAllObjsByNameInRoom(objName, roomName)
+    let foundInvObjs = await getObjs.getAllObjsByNameInInventory(objName, userId)
 
     // Logic depending on how many objects are found
     if (foundObjs.length === 0) {

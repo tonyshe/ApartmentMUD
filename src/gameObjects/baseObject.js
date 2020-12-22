@@ -1,12 +1,14 @@
 mongoose = require("mongoose")
 
+// base object schema
 const baseObjectSchemaStructure = {
     names: {type: [String]},
     roomName: {type: String},
     important: {type: Boolean},
     takeable: {type: Boolean},
     description: {type: String},
-    describe: {type: String}
+    describe: {type: String},
+    visible: {type: Boolean}
 }
 
 const baseObjectSchema = new mongoose.Schema(baseObjectSchemaStructure);
@@ -21,7 +23,8 @@ async function createBaseObject(objInfo) {
         important = false,
         takeable = false,
         description = "It's either indescribable or I forgot to write a description for this...",
-        describe = 'baseDescribe'
+        describe = 'baseDescribe',
+        visible = true
     } = objInfo;
 
     // Obj payload for mongodb
@@ -30,7 +33,8 @@ async function createBaseObject(objInfo) {
         important: important,
         takeable: takeable,
         description: description,
-        describe: describe
+        describe: describe,
+        visible: visible
     }
 
     const url = "mongodb://127.0.0.1:27017/"  + roomName;
