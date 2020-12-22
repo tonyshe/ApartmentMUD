@@ -1,15 +1,17 @@
 mongoose = require("mongoose")
 
-const basicObjectSchema = new mongoose.Schema({
+const baseObjectSchemaStructure = {
     names: {type: [String]},
+    roomName: {type: String},
     important: {type: Boolean},
     takeable: {type: Boolean},
-    visible: {type: Boolean},
     description: {type: String},
     describe: {type: String}
-});
+}
+
+const baseObjectSchema = new mongoose.Schema(baseObjectSchemaStructure);
 collectionName = "baseobject"
-const basicObj = mongoose.model(collectionName, basicObjectSchema);
+const baseObj = mongoose.model(collectionName, baseObjectSchema);
   
 async function createBaseObject(objInfo) {
     // Setting default values
@@ -18,7 +20,6 @@ async function createBaseObject(objInfo) {
         names = ['noname'],
         important = false,
         takeable = false,
-        visible = true,
         description = "It's either indescribable or I forgot to write a description for this...",
         describe = 'baseDescribe'
     } = objInfo;
@@ -28,7 +29,6 @@ async function createBaseObject(objInfo) {
         names: names,
         important: important,
         takeable: takeable,
-        visible: visible,
         description: description,
         describe: describe
     }
@@ -36,7 +36,7 @@ async function createBaseObject(objInfo) {
     const url = "mongodb://127.0.0.1:27017/"  + roomName;
     await mongoose.connect(url, {useNewUrlParser: true, useUnifiedTopology: true})
     
-    await basicObj.findOne({names: names}).then((result) => {
+    await baseObj.findOne({names: names}).then((result) => {
         if (result != null) {
             console.log("Cannot make object with name " + names + ": already exists")
             mongoose.connection.close()
@@ -45,7 +45,7 @@ async function createBaseObject(objInfo) {
     })
 
     console.log("  -Making DB object: " + names)
-    let obj = await basicObj.create({...objProps})
+    let obj = await baseObj.create({...objProps})
     await mongoose.connection.close()
     return obj._id
 }
@@ -53,5 +53,6 @@ async function createBaseObject(objInfo) {
 // Export the Obj
 module.exports = {
     createBaseObject,
-    basicObj
+    baseObj,
+    baseObjectSchemaStructure
 }

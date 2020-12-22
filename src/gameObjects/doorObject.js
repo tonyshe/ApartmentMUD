@@ -1,19 +1,18 @@
 mongoose = require("mongoose")
-const {setObjectPropertyByDbIdAndRoomName} = require("../gameFunctions/objectFunctions/setObjectFunctions")
+const { setObjectPropertyByDbIdAndRoomName } = require("../gameFunctions/objectFunctions/setObjectFunctions")
+const { baseObjectSchemaStructure } = require("./baseObject")
+
+let doorObjectSchemaAddons = {
+    toRoom: { type: String },
+    open: { type: Boolean },
+    locked: { type: Boolean },
+    linkedDoor: { type: String }
+}
 
 const doorObjectSchema = new mongoose.Schema({
-    names: {type: [String]},
-    room: {type: String},
-    toRoom: {type: String},
-    open: {type: Boolean},
-    locked: {type: Boolean},
-    linkedDoor: {type: String},
-    important: {type: Boolean},
-    takeable: {type: Boolean},
-    description: {type: String},
-    describe: {type: String}
-    }
-);
+    ...baseObjectSchemaStructure,
+    ...doorObjectSchemaAddons
+});
 
 collectionName = "door"
 
@@ -25,21 +24,22 @@ async function createDoorObjectPair(doorA, doorB) {
      */
     let doorAObj = await createDoorObject(doorA)
     let doorBObj = await createDoorObject({
-        ...doorB, 
-        "linkedDoor": doorA._id, 
-        "toRoom": doorA.room})
+        ...doorB,
+        "linkedDoor": doorA._id,
+        "toRoom": doorA.roomName
+    })
 
     await setObjectPropertyByDbIdAndRoomName(
-        doorAObj._id, 
-        doorAObj.room,
-        "linkedDoor", 
+        doorAObj._id,
+        doorAObj.roomName,
+        "linkedDoor",
         String(doorBObj._id)
     )
     await setObjectPropertyByDbIdAndRoomName(
-        doorAObj._id, 
-        doorAObj.room,
-        "toRoom", 
-        String(doorBObj.room)
+        doorAObj._id,
+        doorAObj.roomName,
+        "toRoom",
+        String(doorBObj.roomName)
     )
 }
 
@@ -52,7 +52,7 @@ async function createDoorObject(objInfo) {
      */
     const {
         names = ['noname'],
-        room = "",
+        roomName = "",
         toRoom = "",
         open = true,
         locked = false,
@@ -65,7 +65,7 @@ async function createDoorObject(objInfo) {
 
     objProps = {
         names: names,
-        room: room,
+        roomName: roomName,
         toRoom: toRoom,
         open: open,
         locked: locked,
@@ -75,10 +75,10 @@ async function createDoorObject(objInfo) {
         description: description,
         describe: describe
     }
-    
-    const url = "mongodb://127.0.0.1:27017/"  + room
-    await mongoose.connect(url, {useNewUrlParser: true, useUnifiedTopology: true})
-    let obj = await doorObj.create({...objProps})
+
+    const url = "mongodb://127.0.0.1:27017/" + roomName
+    await mongoose.connect(url, { useNewUrlParser: true, useUnifiedTopology: true })
+    let obj = await doorObj.create({ ...objProps })
     await mongoose.connection.close()
     return obj
 }

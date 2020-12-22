@@ -4,7 +4,7 @@ const scriptHelpers = require("./gameFunctions/helperFunctions/scriptHelpers")
 const { setupSocket } = require("./socket/socketSetup")
 
 // game objects
-const { createBaseObject } = require("./gameObjects/basicObject");
+const { createBaseObject } = require("./gameObjects/baseObject");
 const { createRoomObject } = require("./gameObjects/roomObject");
 const { createDoorObjectPair } = require("./gameObjects/doorObject")
 
@@ -103,12 +103,12 @@ async function envSetup() {
 	await createDoorObjectPair(
 		{
 			names: ['door', 'hallway', 'bedroom door', 'exit'],
-			room: "mud_bedroom",
+			roomName: "mud_bedroom",
 			description: "A door to the hallway.",
 		},
 		{
 			names: ['door', 'bedroom', 'bedroom door'],
-			room: "mud_hallway",
+			roomName: "mud_hallway",
 			description: "A door to the bedroom.",
 		}
 	)
