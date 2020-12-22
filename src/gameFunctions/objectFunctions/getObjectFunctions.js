@@ -57,6 +57,17 @@ async function getAllObjsByNameInRoom(objName, roomName) {
     return foundObjs
 }
 
+async function getAllVisibleObjsInRoomByName(objName, roomName) {
+    const objs = await getAllObjsByNameInRoom(objName, roomName)
+    let visibleObjs = []
+    for (let i=0; i<objs.length; i++) {
+        if (objs[i].visible) {
+            visibleObjs.push(objs[i])
+        }
+    }
+    return visibleObjs
+}
+
 async function getAllObjsByNameInInventory(objName, userId) {
     const objs = await getAllObjectsInInventory(userId)
     let foundObjs = []
@@ -160,6 +171,7 @@ module.exports = {
     getAllDoorsInRoom,
     getAllImportantObjectsInRoom,
     getAllObjsByNameInRoom,
+    getAllVisibleObjsInRoomByName,
     getAllObjectsInInventory,
     getAllObjsByNameInInventory,
     getAllObjectsInRoom,

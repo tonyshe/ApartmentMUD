@@ -62,7 +62,7 @@ async function createPerson(objInfo) {
         }
     })
 
-    console.log("Making DB person: " + names)
+    console.log("Making person: " + names)
     let obj = await person.create({...objProps})
     await mongoose.connection.close()
 

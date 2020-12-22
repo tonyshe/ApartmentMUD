@@ -4,7 +4,7 @@ const {describeFunctions} = require("../describeFunctions/describeFunctions")
 
 async function examineObject(roomName, userId, objName) {
     // Search all documents in all collections for a match. Create an array of matching objects
-    let foundObjs = await getObjs.getAllObjsByNameInRoom(objName, roomName)
+    let foundObjs = await getObjs.getAllVisibleObjsInRoomByName(objName, roomName)
     foundObjs = foundObjs.concat(await getObjs.getAllObjsByNameInInventory(objName, userId))
 
     // Logic depending on how many objects are found

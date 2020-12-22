@@ -5,10 +5,11 @@ const { baseObjectSchemaStructure } = require("./baseObject")
 // Additional container object schema to add onto base object schema 
 let containerObjectSchemaAddons = {
     proposition: { type: String },
-    contains: { type: [String] },
+    contains: { type: {Object} },
     objsAllowed: { type: [String] },
     open: { type: Boolean },
-    locked: { type: Boolean }
+    locked: { type: Boolean },
+    closeable: { type: Boolean }
 }
 
 const containerObjectSchema = new mongoose.Schema({
@@ -24,36 +25,42 @@ async function createContainerObject(objInfo) {
         roomName = 'orphanedObjs',
         names = ['noname'],
         important = false,
-        takeable = false,
+        takeable = false, // keep this as false, or else weird things can happen.
         description = "It's either indescribable or I forgot to write a description for this...",
         describe = 'containerDescribe',
         visible = true,
-        proposition = "on",
-        contains = [], // Contains obj ids
+        proposition = "on", // preferred preposition. Try to be consistent with the command parsing.
+        contains = {}, // Collection of objects inside container. You can't set this manually
         objsAllowed = [], // Allows any object if not set. Otherwise, only accepts objects in this list.
         open = true,
-        locked = false
+        locked = false,
+        closeable = false
     } = objInfo;
 
     objProps = {
         roomName: roomName,
         names: names,
         important: important,
-        takeable: takeable,
+        takeable: false,
         description: description,
         describe: describe,
         visible: visible,
         proposition: proposition,
-        contains: contains,
+        contains: {},
         objsAllowed: objsAllowed,
         open: open,
-        locked: locked
+        locked: locked,
+        closeable: closeable
     }
 
-    console.log("  -Making DB container: " + names)
+    console.log("  -Making container: " + names)
     const url = "mongodb://127.0.0.1:27017/"  + roomName;
     await mongoose.connect(url, {useNewUrlParser: true, useUnifiedTopology: true})
-    let obj = await baseObj.create({...objProps})
+    let obj = await containerObj.create({...objProps})
     await mongoose.connection.close()
     return obj._id
+}
+
+module.exports = {
+    createContainerObject
 }

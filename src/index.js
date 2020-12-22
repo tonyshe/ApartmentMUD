@@ -3,10 +3,8 @@ const MongoClient = require('mongodb').MongoClient;
 const scriptHelpers = require("./gameFunctions/helperFunctions/scriptHelpers")
 const { setupSocket } = require("./socket/socketSetup")
 
-// game objects
-const { createBaseObject } = require("./gameObjects/baseObject");
-const { createRoomObject } = require("./gameObjects/roomObject");
-const { createDoorObjectPair } = require("./gameObjects/doorObject")
+// Scenarios
+const {apartmentScenario} = require("./scenarios/apartmentScenario")
 
 // aux functions
 const { sleep } = require('./gameFunctions/helperFunctions/textHelpers')
@@ -71,71 +69,16 @@ async function dropAllGameRooms() {
 
 // Setup environment
 async function envSetup() {
+	// Clean up databases
 	console.log("Cleaning up user inventories")
 	await dropAllUserInventories()
-	// Clean up databases
 	console.log("Cleaning up databases")
 	const roomDbs = ['userIdMap', 'orphanedObjs']
 	await dropAllRoomDbs(roomDbs)
 	await dropAllGameRooms()
 
-
 	console.log("Creating world...")
-	// Make rooms
-	await createRoomObject(
-		{
-			roomName: "mud_bedroom",
-			names: ['bedroom','room'],
-			description: "A simple four-sided room and shag carpet.",
-			look: 'bedroomLook'
-		}
-	)
-	await createRoomObject(
-		{
-			roomName: "mud_hallway",
-			names: ['hallway', 'corridor', 'hall'],
-			description: "A small hallway connecting the bedroom, stairs, and bathroom.",
-			look: 'bedroomLook'
-		}
-	)
-
-	// Make doors
-	await createDoorObjectPair(
-		{
-			names: ['door', 'hallway', 'bedroom door', 'exit'],
-			roomName: "mud_bedroom",
-			description: "A door to the hallway.",
-		},
-		{
-			names: ['door', 'bedroom', 'bedroom door'],
-			roomName: "mud_hallway",
-			description: "A door to the bedroom.",
-		}
-	)
-
-	// Make base objects
-	await createBaseObject({
-		roomName: "mud_bedroom",
-		names: ["sandwich", "food"],
-		description: "A yummy sandwich.",
-		takeable: true
-	})
-	await createBaseObject(
-		{
-			roomName: "mud_bedroom",
-			names: ["popsicle", "ice cream", "food"],
-			description: "A melting popsicle.",
-			takeable: true
-		}
-	)
-	await createBaseObject(
-		{
-			roomName: "mud_bedroom",
-			names: ["coffee table", "table", "ikea table"],
-			description: "A small IKEA coffee table.",
-			takeable: false
-		}
-	)
+	await apartmentScenario()	
 
 	// socketsss
 	await setupSocket()

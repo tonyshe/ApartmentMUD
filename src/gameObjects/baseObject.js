@@ -48,7 +48,7 @@ async function createBaseObject(objInfo) {
         }
     })
 
-    console.log("  -Making DB object: " + names)
+    console.log("  -Making object: " + names)
     let obj = await baseObj.create({...objProps})
     await mongoose.connection.close()
     return obj._id
