@@ -3,6 +3,7 @@ const { createBaseObject } = require("../gameObjects/baseObject");
 const { createRoomObject } = require("../gameObjects/roomObject");
 const { createDoorObjectPair } = require("../gameObjects/doorObject")
 const { createContainerObject } = require("../gameObjects/containerObject")
+const { putObjectAdmin } = require("../gameFunctions/actions/putObject")
 
 async function apartmentScenario() {
     // Make rooms
@@ -37,14 +38,14 @@ async function apartmentScenario() {
     )
 
     // Make base objects
-    await createBaseObject({
+    const sandwichId = await createBaseObject({
         roomName: "mud_bedroom",
         names: ["sandwich", "food", "c"],
         description: "A yummy sandwich.",
         takeable: true,
         important: true
     })
-    await createBaseObject(
+    const popsicleId = await createBaseObject(
         {
             roomName: "mud_bedroom",
             names: ["popsicle", "ice cream", "food", "b"],
@@ -54,13 +55,15 @@ async function apartmentScenario() {
     )
 
     // Make container objs
-    await createContainerObject(
+    const tableId = await createContainerObject(
         {
             roomName: "mud_bedroom",
-            names: ["wooden table", "table"],
-            description: "A simple wooden table."
+            names: ["wooden table", "table", 't'],
+            description: "A simple wooden table.",
         }
     )
+    await putObjectAdmin(sandwichId, tableId, "mud_bedroom")
+
     await createContainerObject(
         {
             roomName: "mud_bedroom",
