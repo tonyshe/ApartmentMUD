@@ -1,6 +1,6 @@
 const getObjs = require("../objectFunctions/GetObjectFunctions")
 const textHelpers = require("../helperFunctions/textHelpers")
-const { text } = require("express")
+const getUsers = require("../userFunctions/getUserFunctions")
 
 const describeFunctions = {
     "baseDescribe": (obj) => { return obj.description },
@@ -29,24 +29,29 @@ const describeFunctions = {
 }
 
 const lookFunctions = {
-    "baseRoomLook": async (roomObj) => {
-        let importantObjs = await getObjs.getAllImportantObjectsInRoom(roomObj.roomName)
-        let outString = ""
-        if (importantObjs.length === 0) {
-            outString = "There is nothing in the room."
-        } else if (importantObjs.length === 1) {
-            outString = textHelpers.addArticle(importantObjs[0].names[0] + " is in the room")
-        } else {
-            for (let i = 0; i < importantObjs.length - 1; i++) {
-                outString += addArticle(importantObjects[i].names[0]) + ", ";
+    "defaultRoomLook": async (userId, roomObj) => {
+        let outString = roomObj.description
+        console.log(outString)
+
+        // listing important objects
+        const importantObjs = await getObjs.getAllImportantObjectsInRoom(roomObj.roomName)
+        const importantObjsNameArray = importantObjs.map((obj) => { return obj.names[0] })
+        const wordList = textHelpers.objLister(importantObjsNameArray)
+        if (wordList[1] != '') {
+            outString += ' ' + textHelpers.capitalizeFirstLetter(wordList[0] + ' ' + wordList[1] + ' ' + ' in the ' + roomObj.names[0] + '.');
+        };
+
+        const peopleObjArray = await getObjs.getAllPeopleInRoom(roomName)
+        const userName = await getUsers.getUserNameByUserId(userId)
+        const peopleNamesArray = await peopleObjArray.map((obj) => { return obj.names[0] })
+        const otherPeopleNamesArray = await peopleNamesArray.filter((name) => {return (name != userName)})
+        if (otherPeopleNamesArray.length > 0) {
+            const peopleWordList = textHelpers.objLister(otherPeopleNamesArray, article = false)
+            if (peopleWordList[1] != '') {
+                outString += ' ' + textHelpers.capitalizeFirstLetter(peopleWordList[0] + ' ' + peopleWordList[1] + ' ' + ' also in the ' + roomObj.names[0] + '.');
             };
-            outString += "and " + addArticle(importantObjects[i].names[0]) + " ";
-            outString += "are in the room.";
         }
-        return
-    },
-    "bedroomLook": () => {
-        return "Alex's main studio room. There is a bed in the corner, with a nightstand next to it. Along the wall is a brown leather couch. In the middle of the room is a coffee table and a large bean bag chair. There are a few windows on the opposite wall and a small book shelf. Around the corner is the kitchen area. To the other side is the entrance to the walk-in closet and bathroom."
+        return outString
     }
 }
 

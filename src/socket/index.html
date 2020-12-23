@@ -81,8 +81,9 @@
                 $('#messages').append($('<li>').text(msg));
             });
 
-            socket.on("disconnectEvent", () => {
-                socket.disconnect("HEY HEY HEY")
+            socket.on("disconnect", () => {
+                $('#messages').append($('<li>').text("You have been disconnected. Please refresh."));
+                socket.disconnect()
             })
         });
     </script>

@@ -7,7 +7,7 @@ const { setupSocket } = require("./socket/socketSetup")
 const {apartmentScenario} = require("./scenarios/apartmentScenario")
 
 // aux functions
-const { sleep } = require('./gameFunctions/helperFunctions/textHelpers')
+const { sleep } = require('./gameFunctions/helperFunctions/scriptHelpers')
 
 async function dropAllRoomDbs(roomDbs) {
 	const baseUrl = "mongodb://127.0.0.1:27017/"
@@ -76,7 +76,7 @@ async function envSetup() {
 	const roomDbs = ['userIdMap', 'orphanedObjs']
 	await dropAllRoomDbs(roomDbs)
 	await dropAllGameRooms()
-
+	await sleep(250)
 	console.log("Creating world...")
 	await apartmentScenario()	
 

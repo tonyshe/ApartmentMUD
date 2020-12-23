@@ -7,7 +7,7 @@ async function deleteUserInRoomById(userDbId, roomName) {
     console.log("Deleting user with database ID: " + userDbId)
     // Make sure to create an ObjectID object when searching by _id on mongo
     await database.collection("people").deleteOne({_id: ObjectID(userDbId)})
-    client.close()
+    await client.close()
     return
 }
 
