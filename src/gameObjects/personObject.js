@@ -1,7 +1,7 @@
 mongoose = require("mongoose")
 const MongoClient = require('mongodb').MongoClient;
 const {makeUserId} = require("../gameFunctions/helperFunctions/gameHelpers")
-const {getUserDbIdByUserId, getUserRoomByUserId} = require("../gameFunctions/objectFunctions/getObjectFunctions")
+const getUsers = require("../gameFunctions/userFunctions/getUserFunctions")
 const {deleteUserInRoomById} = require("../gameFunctions/objectFunctions/deleteObjectFunctions")
 
 const personSchema = new mongoose.Schema({
@@ -62,7 +62,7 @@ async function createPerson(objInfo) {
         }
     })
 
-    console.log("Making DB person: " + names)
+    console.log("Making person: " + names)
     let obj = await person.create({...objProps})
     await mongoose.connection.close()
 
@@ -90,8 +90,8 @@ async function createPerson(objInfo) {
 
 async function deletePerson(userId) {
     // Takes in a user id (not Db id!!!!) and deletes user
-    const userDbId = await getUserDbIdByUserId(userId)
-    const userRoom = await getUserRoomByUserId(userId)
+    const userDbId = await getUsers.getUserDbIdByUserId(userId)
+    const userRoom = await getUsers.getUserRoomByUserId(userId)
     console.log("DELETING: Userid: " + userId + " DB ID: " + userDbId)
     await deleteUserInRoomById(userDbId, userRoom)
     return userDbId

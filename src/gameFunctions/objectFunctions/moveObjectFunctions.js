@@ -1,6 +1,7 @@
 const {mongoDbClientConnect} = require("../../backendFunctions/mongoHelpers")
 const getObjs = require("./getObjectFunctions")
 const setObjs = require("./setObjectFunctions")
+const getUsers = require("../userFunctions/getUserFunctions")
 
 async function moveObjectToAnotherDb(objId, fromDb, toDb) {
     /**
@@ -29,10 +30,10 @@ async function moveUserIdToAnotherRoom(userId, toRoomName) {
      * @param {String} toRoomName - room to move the user to
      */
     // Delete the user from the current room
-    let fromRoomName = await getObjs.getUserRoomByUserId(userId)
+    let fromRoomName = await getUsers.getUserRoomByUserId(userId)
     console.log("Moving " + userId + " from " + fromRoomName + " to " + toRoomName)
     
-    let userDbId = await getObjs.getUserDbIdByUserId(userId)
+    let userDbId = await getUsers.getUserDbIdByUserId(userId)
     let [userObj, collName] = await getObjs.getObjByDbIdAndRoom(userDbId, fromRoomName)
     const [fromDatabase,fromClient] = await mongoDbClientConnect("mongodb://127.0.0.1:27017/", fromRoomName)
     await fromDatabase.collection(collName).deleteOne(userObj)
