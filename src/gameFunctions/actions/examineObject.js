@@ -1,5 +1,6 @@
 mongoose = require("mongoose")
 const getObjs = require("../objectFunctions/GetObjectFunctions")
+const getUsers = require("../userFunctions/getUserFunctions")
 const {describeFunctions} = require("../describeFunctions/describeFunctions")
 const { response } = require("express")
 
@@ -11,6 +12,13 @@ async function examineObject(roomName, userId, objName) {
      * @param {String} objName - name of the object to examine
      * @return {String: [String]} - Obj containing message: [userid] keypairs. consumed by the socket handler to give custom messages to users
      */
+    
+    const selfWords = ["me", "myself", "self", "yourself", "you", "i"]
+    if (selfWords.contains(objName)) {
+        const userName = await getUsers.getUserNameByUserId(userId)
+        return {["Hey look it's you, " +  userName]: [userId]}
+    }
+
     // Search all documents in all collections for a match. Create an array of matching objects
     let foundObjs = await getObjs.getAllVisibleObjsInRoomByName(objName, roomName)
     foundObjs = foundObjs.concat(await getObjs.getAllObjsByNameInInventory(objName, userId))
