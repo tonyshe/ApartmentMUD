@@ -31,7 +31,6 @@ const describeFunctions = {
 const lookFunctions = {
     "defaultRoomLook": async (userId, roomObj) => {
         let outString = roomObj.description
-        console.log(outString)
 
         // listing important objects
         const importantObjs = await getObjs.getAllImportantObjectsInRoom(roomObj.roomName)

@@ -49,17 +49,26 @@ async function getAllObjectsInRoom(roomName) {
 
 async function getAllObjsByNameInRoom(objName, roomName) {
     const objs = await getAllObjectsInRoom(roomName)
-    return objs.filter((obj) => {return obj.names.includes(objName)})
+    const foundObjs = objs.filter((obj) => {return obj.names.includes(objName)})
+    return foundObjs
+}
+
+async function getAllVisibleObjsInRoom(roomName) {
+    const objs = await getAllObjectsInRoom(roomName)
+    const visibleObjs = objs.filter((obj) => {return obj.visible})
+    return visibleObjs
 }
 
 async function getAllVisibleObjsInRoomByName(objName, roomName) {
     const objs = await getAllObjsByNameInRoom(objName, roomName)
-    return objs.filter((obj) => {return obj.visible})
+    const visibleObjs = objs.filter((obj) => {return obj.visible})
+    return visibleObjs
 }
 
 async function getAllObjsByNameInInventory(objName, userId) {
     const objs = await getAllObjectsInInventory(userId)
-    return objs.filter((obj) => {return obj.names.includes(objName)})
+    const foundObjs = objs.filter((obj) => {return obj.names.includes(objName)})
+    return foundObjs
 }
 
 async function getAllObjectsInRoomAndInventory(roomName, userId) {
@@ -121,8 +130,9 @@ async function getAllPeopleInRoom(roomName) {
 
 async function getAllImportantObjectsInRoom(roomName) {
     // returns a list of all important objects in a room
-    let visibleObjs = await getAllVisibleObjsInRoomByName(roomName)
-    return visibleObjs.filter((obj) => {return obj.important})
+    let visibleObjs = await getAllVisibleObjsInRoom(roomName)
+    const importObjs = visibleObjs.filter((obj) => {return obj.important})
+    return importObjs
 }
 
 async function getObjByDbIdAndRoom(objDbId, roomName) {
@@ -160,6 +170,7 @@ module.exports = {
     getAllDoorsInRoom,
     getAllImportantObjectsInRoom,
     getAllObjsByNameInRoom,
+    getAllVisibleObjsInRoom,
     getAllVisibleObjsInRoomByName,
     getAllObjectsInInventory,
     getAllObjsByNameInInventory,
