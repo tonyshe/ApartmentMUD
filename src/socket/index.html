@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="utf-8">
-    <title>Welcome to the Interactive Adventure Room!</title>
+    <title>AdventureMUD</title>
 </head>
 
 <style>
@@ -77,7 +77,6 @@
         $(document).ready(function () {
             $('#command').submit(function (e) {
                 e.preventDefault();
-                console.log($("#userCom").val())
                 socket.emit('chat message', [$("#userCom").val(), userId])
                 $(document).scrollTop($(document).height()); //scroll to bottom
                 $('#command').trigger("reset"); //Resets the text box
@@ -102,7 +101,8 @@
         });
 
         socket.on("disconnect", () => {
-            newMessage("<p style='background-color:tomato;'>You have been disconnected. Please refresh.</p>");
+            newMessage("<p style='background-color:salmon;'><b>You have been disconnected. Please refresh.</b></p>");
+            $('#command').remove()
             socket.disconnect()
         })
     });
