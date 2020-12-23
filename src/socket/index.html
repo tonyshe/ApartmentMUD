@@ -35,7 +35,7 @@
 </style>
 <div id="messageBox">
     <div class="message">
-        <p><b>Welcome to the Alex's Studio Apartment!</b><br>Enter a command or type "help" for a list of commands.<br>
+        <p><b>Welcome to the ApartmentMUD!</b><br>Enter a command or type "help" for a list of commands.<br>
             <hr>
         </p>
     </div>
@@ -53,20 +53,18 @@
 <script>
     $(function () {
         function newMessage(msg) {
-            if (suppressMessages != true) {
-                //Adds new div to HTML body to display messages
-                let messages = document.getElementById("messageBox");
-                let newDiv = document.createElement('div');
+            //Adds new div to HTML body to display messages
+            let messages = document.getElementById("messageBox");
+            let newDiv = document.createElement('div');
 
-                //Create new div to append to MESSAGEBOX
-                newDiv.className = "message";
-                messages.appendChild(newDiv);
+            //Create new div to append to MESSAGEBOX
+            newDiv.className = "message";
+            messages.appendChild(newDiv);
 
-                //Create new p to insert into MESSAGE
-                messageText = document.createElement('p');
-                messageText.innerHTML = msg;
-                newDiv.appendChild(messageText);
-            };
+            //Create new p to insert into MESSAGE
+            messageText = document.createElement('p');
+            messageText.innerHTML = msg;
+            newDiv.appendChild(messageText);
         }
 
         var socket = io();
@@ -75,20 +73,15 @@
         socket.on('connect', () => {
             socket.emit('userId', userId)
         })
-
+        // 
         $(document).ready(function () {
             $('#command').submit(function (e) {
                 e.preventDefault();
-                if ($("#userCom").val() == "") {
-                    e.preventDefault();
-                }
-                else {
-                    e.preventDefault();
-                    console.log($('inputForm').val())
-                    socket.emit('chat message', [$('inputForm').val(), userId]);
-                };
+                console.log($("#userCom").val())
+                socket.emit('chat message', [$("#userCom").val(), userId])
                 $(document).scrollTop($(document).height()); //scroll to bottom
                 $('#command').trigger("reset"); //Resets the text box
+                return false
             });
         });
 
@@ -97,12 +90,19 @@
         });
 
         socket.on('chat message_' + userId, function (msg) {
-            console.log(msg)
+            // determine if the user was at the bottom of the page before a new message is given
+            let atBottom = false
+            if ($(document).scrollTop() + $(window).height() === $(document).height()) {atBottom = true}
+
+            // add new message
             newMessage(msg);
+            
+            // scroll to the bottom if the user was orignally at the bottom
+            if (atBottom) {$(document).scrollTop($(document).height())}; //scroll to bottom
         });
 
         socket.on("disconnect", () => {
-            newMessage("You have been disconnected. Please refresh.");
+            newMessage("<p style='background-color:tomato;'>You have been disconnected. Please refresh.</p>");
             socket.disconnect()
         })
     });
