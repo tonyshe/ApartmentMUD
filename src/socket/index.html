@@ -1,97 +1,112 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
 
 <head>
-    <title>Socket.IO chat</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font: 13px Helvetica, Arial;
-        }
-
-        form {
-            background: #000;
-            padding: 3px;
-            position: fixed;
-            bottom: 0;
-            width: 100%;
-        }
-
-        form input {
-            border: 0;
-            padding: 10px;
-            width: 90%;
-            margin-right: 0.5%;
-        }
-
-        form button {
-            width: 9%;
-            background: rgb(130, 224, 255);
-            border: none;
-            padding: 10px;
-        }
-
-        #messages {
-            list-style-type: none;
-            margin: 0;
-            padding: 0;
-        }
-
-        #messages li {
-            padding: 5px 10px;
-        }
-
-        #messages li:nth-child(odd) {
-            background: #eee;
-        }
-    </style>
+    <meta charset="utf-8">
+    <title>Welcome to the Interactive Adventure Room!</title>
 </head>
 
-<body>
-    <ul id="messages"></ul>
-    <form action="">
-        <input id="m" autocomplete="off" /><button>Send</button>
-    </form>
-    <script src="/socket.io/socket.io.js"></script>
-    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
-    <script>
-        $(function () {
-            var socket = io();
-            const userId = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
-            
-            socket.on('connect', () => {
-                socket.emit('userId', userId)
-            })
+<style>
+    body {
+        min-width: 800px;
+        background-color: #FFFFFF;
+        color: black;
+    }
 
-            $('form').submit(function (e) {
-                e.preventDefault(); // prevents page reloading
+    .message {
+        padding-top: 20px 0;
+        font-family: "Times New Roman";
+        font-size: 16px;
+    }
 
-                // sends an array of [user command string, userId]
-                socket.emit('chat message', [$('#m').val(), userId]);
-                $('#messages').append($('<li>').text($('#m').val()));
-                $('#m').val('');
-                return false;
-            });
+    .submitForm {
+        padding-bottom: 20px;
+        max-width: 800px;
+    }
 
-            socket.on('chat message', function (msg) {
-                $('#messages').append($('<li>').text(msg));
-            });
+    .inputForm {
+        border: 0;
+        outline: none;
+        font-family: "Times New Roman";
+        font-size: 16px;
+        background: transparent;
+        color: black;
+    }
+</style>
+<div id="messageBox">
+    <div class="message">
+        <p><b>Welcome to the ApartmentMUD!</b><br>Enter a command or type "help" for a list of commands.<br>
+            <hr>
+        </p>
+    </div>
+</div>
 
-            socket.on('chat message_' + userId, function (msg) {
-                $('#messages').append($('<li>').text(msg));
-            });
+<form class="submitForm" id="command" action="" autocomplete="off">
+    <b>>> </b>
+    <input size=64 class="inputForm" type="text" id="userCom" autofocus placeholder="Enter a command or type 'help'"
+        onfocus="this.placeholder =''" onblur="this.placeholder='Enter a command or type &quot;help&quot;'">
+</form>
 
-            socket.on("disconnect", () => {
-                $('#messages').append($('<li>').text("You have been disconnected. Please refresh."));
-                socket.disconnect()
-            })
-        });
-    </script>
 </body>
+<script src="/socket.io/socket.io.js"></script>
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+<script>
+    $(function () {
+        function newMessage(msg) {
+            //Adds new div to HTML body to display messages
+            let messages = document.getElementById("messageBox");
+            let newDiv = document.createElement('div');
+
+            //Create new div to append to MESSAGEBOX
+            newDiv.className = "message";
+            messages.appendChild(newDiv);
+
+            //Create new p to insert into MESSAGE
+            messageText = document.createElement('p');
+            messageText.innerHTML = msg;
+            newDiv.appendChild(messageText);
+        }
+
+        var socket = io();
+        const userId = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+
+        socket.on('connect', () => {
+            socket.emit('userId', userId)
+        })
+        // 
+        $(document).ready(function () {
+            $('#command').submit(function (e) {
+                e.preventDefault();
+                console.log($("#userCom").val())
+                socket.emit('chat message', [$("#userCom").val(), userId])
+                $(document).scrollTop($(document).height()); //scroll to bottom
+                $('#command').trigger("reset"); //Resets the text box
+                return false
+            });
+        });
+
+        socket.on('chat message', function (msg) {
+            newMessage(msg);
+        });
+
+        socket.on('chat message_' + userId, function (msg) {
+            // determine if the user was at the bottom of the page before a new message is given
+            let atBottom = false
+            if ($(document).scrollTop() + $(window).height() === $(document).height()) {atBottom = true}
+
+            // add new message
+            newMessage(msg);
+            
+            // scroll to the bottom if the user was orignally at the bottom
+            if (atBottom) {$(document).scrollTop($(document).height())}; //scroll to bottom
+        });
+
+        socket.on("disconnect", () => {
+            newMessage("<p style='background-color:tomato;'>You have been disconnected. Please refresh.</p>");
+            socket.disconnect()
+        })
+    });
+</script>
+<script></script>
 
 </html>
