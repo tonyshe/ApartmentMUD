@@ -1,21 +1,31 @@
 mongoose = require("mongoose")
 const getObjs = require("../objectFunctions/GetObjectFunctions")
 const {describeFunctions} = require("../describeFunctions/describeFunctions")
+const { response } = require("express")
 
 async function examineObject(roomName, userId, objName) {
+    /**
+     * Returns the description of an obj in the room or user inventory that matches the obj name.
+     * @param {String} roomName - room db name. the container obj must be in this room
+     * @param {String} userId - user id of the user
+     * @param {String} objName - name of the object to examine
+     * @return {String: [String]} - Obj containing message: [userid] keypairs. consumed by the socket handler to give custom messages to users
+     */
     // Search all documents in all collections for a match. Create an array of matching objects
     let foundObjs = await getObjs.getAllVisibleObjsInRoomByName(objName, roomName)
     foundObjs = foundObjs.concat(await getObjs.getAllObjsByNameInInventory(objName, userId))
 
     // Logic depending on how many objects are found
     if (foundObjs.length === 0) {
-        return "No such thing exists."
+        return {["No such thing exists."]: [userId]}
     } else if (foundObjs.length > 1) {
-        return 'There are more than one thing by the name ' + '"' + objName + '." Please be more specific as to which one you mean.'
+        const response = 'There are more than one thing by the name ' + '"' + objName + '." Please be more specific as to which one you mean.'
+        return {[response]: [userId]}
     } else if (foundObjs.length === 1) {
         // If only one object is found, use the custom describe() functions from ../describeFunctions
         obj = foundObjs[0]
-        return describeFunctions[obj.describe](obj)
+        const response = describeFunctions[obj.describe](obj)
+        return {[response]: [userId]}
     }
 }
 

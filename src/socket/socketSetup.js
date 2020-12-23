@@ -35,7 +35,12 @@ async function setupSocket() {
         await socket.on('chat message', async (msg) => {
             // msg is an array of [user submitted message, userid]
             let returnMsg = await command(msg[0], socket.userId)
-            if (returnMsg) io.emit('chat message', returnMsg);
+            let returnMsgList = Object.entries(returnMsg)
+            for (let i=0; i < returnMsgList.length; i++) {
+                for (let j=0; j < returnMsgList[i][1].length; j++) {
+                    await io.emit('chat message_'+returnMsgList[i][1][j] , returnMsgList[i][0])
+                }
+            };
         });
 
         await socket.on('disconnect', async (msg) => {

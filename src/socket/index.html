@@ -77,7 +77,12 @@
                 $('#m').val('');
                 return false;
             });
+
             socket.on('chat message', function (msg) {
+                $('#messages').append($('<li>').text(msg));
+            });
+
+            socket.on('chat message_' + userId, function (msg) {
                 $('#messages').append($('<li>').text(msg));
             });
 
