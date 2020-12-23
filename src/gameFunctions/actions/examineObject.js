@@ -14,9 +14,10 @@ async function examineObject(roomName, userId, objName) {
      */
     
     const selfWords = ["me", "myself", "self", "yourself", "you", "i"]
-    if (selfWords.contains(objName)) {
+
+    if (selfWords.includes(objName)) {
         const userName = await getUsers.getUserNameByUserId(userId)
-        return {["Hey look it's you, " +  userName]: [userId]}
+        return {["Hey look it's you, " +  userName + "."]: [userId]}
     }
 
     // Search all documents in all collections for a match. Create an array of matching objects
