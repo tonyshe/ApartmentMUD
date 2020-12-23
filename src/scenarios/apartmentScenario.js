@@ -58,7 +58,7 @@ async function apartmentScenario() {
     const tableId = await createContainerObject(
         {
             roomName: "mud_bedroom",
-            names: ["wooden table", "table", 't'],
+            names: [ "table", "wooden table", 't'],
             description: "A simple wooden table.",
         }
     )

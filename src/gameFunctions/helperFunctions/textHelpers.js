@@ -3,13 +3,25 @@ function capitalizeFirstLetter(string) {
   return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
-function addArticle(string) {
+function addArticle(string, important = false) {
   //adds AN to words that start with vowels, otherwise A
-  if ("aeiou".indexOf(string.charAt(0).toLowerCase()) > -1) { return "an " + string; };
-  return "a " + string;
+  if (!important) {
+    if ("aeiou".indexOf(string.charAt(0).toLowerCase()) > -1) { return "an " + string; } 
+    else {return "a " + string}
+  }
+  else {
+    return 'the ' + string
+  }
+  
 }
 
 function objLister(objArray, article = true) {
+  /**
+   * Goes through a list of names strings and creates a natural english list
+   * @param {[String]} objArray - Array of names
+   * @param {Boolean} article  - adds articles to words if true (false for things like user names)
+   * @return {[String, String]} - Array of length 2. First element is a list of obj names, second is the verb are/is
+   */
   //goes through a list of words and returns a sentence
   //first index of list is a concatenated string of "x, y... and z"
   //second index of list is the verb is/are
