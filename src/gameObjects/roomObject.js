@@ -23,7 +23,7 @@ async function createRoomObject(objInfo) {
         takeable = false,
         description = "It's either indescribable or I forgot to write a description for this...",
         describe = 'baseDescribe',
-        look = 'baseRoomLook'
+        look = 'defaultRoomLook'
     } = objInfo;
 
     // Obj payload for mongodb

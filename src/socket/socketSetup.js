@@ -5,34 +5,40 @@ const { create } = require('domain');
 const { command } = require("../gameFunctions/commandFunctions/command")
 const {createPerson, deletePerson} = require("../gameObjects/personObject")
 const {makeRandomWord} = require("../gameFunctions/helperFunctions/gameHelpers")
+const fetch = require("node-fetch")
+
 
 async function setupSocket() {
     app.get('/', (req, res) => {
         res.sendFile(__dirname + '/index.html');
     });
     
-    io.on('connection', (socket) => {
-        socket.on('userId', async (userId) => {
+    await io.on('connection', async (socket) => {
+        await socket.on('userId', async (userId) => {
             console.log('User logon and Id created: ' + userId)
             socket.userId = userId
-            socket.join('lobby')
+            await socket.join('lobby')
             socket.room = "lobby"
-            const randomName = makeRandomWord(6)
+            const randomNameArrayRaw = await fetch('http://names.drycodes.com/1')
+            const randomNameArray = await randomNameArrayRaw.json()
+            const randomName = randomNameArray[0]
+            // const randomName = await makeRandomWord(6)
             await createPerson({
                 roomName: "mud_bedroom", 
                 names: [randomName, "person"], 
+                userName: randomName,
                 description: "It's your friend " + randomName + ".", 
                 userId: userId
             })
         });
 
-        socket.on('chat message', async (msg) => {
+        await socket.on('chat message', async (msg) => {
             // msg is an array of [user submitted message, userid]
             let returnMsg = await command(msg[0], socket.userId)
             if (returnMsg) io.emit('chat message', returnMsg);
         });
 
-        socket.on('disconnect', async (msg) => {
+        await socket.on('disconnect', async (msg) => {
             console.log('user disconnected: ' + socket.userId);
             // socket.broadcast.to(socket.room).emit(socket.userId)
             await deletePerson(socket.userId)

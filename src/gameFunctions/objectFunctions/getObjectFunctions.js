@@ -24,6 +24,7 @@ async function getAllDoorsInRoom(roomName) {
      */
     const [database, client] = await mongoDbClientConnect("mongodb://127.0.0.1:27017/", roomName)
     let doors = await database.collection("doors").find().toArray()
+    await client.close()
     return doors
 }
 
@@ -42,41 +43,23 @@ async function getAllObjectsInRoom(roomName) {
         let x = await collection.find().toArray()
         objs = objs.concat(x)
     }
-    client.close()
+    await client.close()
     return objs
 }
 
 async function getAllObjsByNameInRoom(objName, roomName) {
     const objs = await getAllObjectsInRoom(roomName)
-    let foundObjs = []
-    for (let i=0; i<objs.length; i++) {
-        if (objs[i].names.includes(objName)) {
-            foundObjs.push(objs[i])
-        }
-    }
-    return foundObjs
+    return objs.filter((obj) => {return obj.names.includes(objName)})
 }
 
 async function getAllVisibleObjsInRoomByName(objName, roomName) {
     const objs = await getAllObjsByNameInRoom(objName, roomName)
-    let visibleObjs = []
-    for (let i=0; i<objs.length; i++) {
-        if (objs[i].visible) {
-            visibleObjs.push(objs[i])
-        }
-    }
-    return visibleObjs
+    return objs.filter((obj) => {return obj.visible})
 }
 
 async function getAllObjsByNameInInventory(objName, userId) {
     const objs = await getAllObjectsInInventory(userId)
-    let foundObjs = []
-    for (let i=0; i<objs.length; i++) {
-        if (objs[i].names.includes(objName)) {
-            foundObjs.push(objs[i])
-        }
-    }
-    return foundObjs
+    return objs.filter((obj) => {return obj.names.includes(objName)})
 }
 
 async function getAllObjectsInRoomAndInventory(roomName, userId) {
@@ -129,6 +112,19 @@ async function getAllObjectsInInventory(userId) {
     return objs
 }
 
+async function getAllPeopleInRoom(roomName) {
+    const [database, client] = await mongoDbClientConnect("mongodb://127.0.0.1:27017/", roomName)
+    const people = await database.collection('people').find().toArray()
+    await client.close()
+    return people
+}
+
+async function getAllImportantObjectsInRoom(roomName) {
+    // returns a list of all important objects in a room
+    let visibleObjs = await getAllVisibleObjsInRoomByName(roomName)
+    return visibleObjs.filter((obj) => {return obj.important})
+}
+
 async function getObjByDbIdAndRoom(objDbId, roomName) {
     /**
      * Returns a mongo db Object and the name of the collection it's in, given a object id and room name. Just like magic
@@ -143,28 +139,21 @@ async function getObjByDbIdAndRoom(objDbId, roomName) {
     for (i = 0; i < objCollections.length; i++) {
         out = await database.collection(objCollections[i]).findOne({ _id: ObjectID(objDbId) })
         if (out) {
-            client.close()
+            await client.close()
             return [out, objCollections[i]]
         }
     }
-    client.close()
+    await client.close()
     return [null, null]
 }
 
-async function getAllImportantObjectsInRoom(roomName) {
-    // returns a list of all important objects in a room
-    // TODO!!!! NOT FINISHED
-    let objCollections = await getAllCollectionsInRoom(roomName)
+async function getRoomObjByRoomName(roomName) {
     const [database, client] = await mongoDbClientConnect("mongodb://127.0.0.1:27017/", roomName)
-    let importantObjs = []
-    for (let i = 0; i < objCollections.length; i++) {
-        let collection = database.collection(objCollections[i])
-        let x = await collection.find({ important: true }).toArray()
-        objs = objs.concat(x)
-    }
-    client.close()
-    return objs
+    let roomObj = await database.collection('room').findOne()
+    await client.close()
+    return roomObj
 }
+
 
 module.exports = {
     getAllCollectionsInRoom,
@@ -176,5 +165,7 @@ module.exports = {
     getAllObjsByNameInInventory,
     getAllObjectsInRoom,
     getAllObjectsInRoomAndInventory,
+    getAllPeopleInRoom,
     getObjByDbIdAndRoom,
+    getRoomObjByRoomName,
 }

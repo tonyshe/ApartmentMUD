@@ -10,8 +10,7 @@ async function apartmentScenario() {
         {
             roomName: "mud_bedroom",
             names: ['bedroom', 'room'],
-            description: "A simple four-sided room and shag carpet.",
-            look: 'bedroomLook'
+            description: "A simple four-sided room and shag carpet."
         }
     )
     await createRoomObject(
@@ -42,7 +41,8 @@ async function apartmentScenario() {
         roomName: "mud_bedroom",
         names: ["sandwich", "food", "c"],
         description: "A yummy sandwich.",
-        takeable: true
+        takeable: true,
+        important: true
     })
     await createBaseObject(
         {

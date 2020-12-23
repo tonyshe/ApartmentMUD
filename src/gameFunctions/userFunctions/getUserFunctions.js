@@ -9,7 +9,7 @@ async function getUserDbIdByUserId(userId) {
     const [database, client] = await mongoDbClientConnect("mongodb://127.0.0.1:27017/", "userIdMap")
     const collection = database.collection('usermapids')
     let x = await collection.findOne({ userId: userId })
-    client.close()
+    await client.close()
     return x.userDbId
 }
 
@@ -22,7 +22,7 @@ async function getUserIdByUserDbId(userDbId) {
     const [database,client] = await mongoDbClientConnect("mongodb://127.0.0.1:27017/", "userIdMap")
     const collection = database.collection('usermapids')
     let x = await collection.findOne({ userDbId: userDbId })
-    client.close()
+    await client.close()
     return x.userId
 }
 
@@ -35,7 +35,7 @@ async function getUserMapObjByUserId(userId) {
     const [database,client] = await mongoDbClientConnect("mongodb://127.0.0.1:27017/", "userIdMap")
     const collection = database.collection('usermapids')
     let x = await collection.findOne({ userId: userId })
-    client.close()
+    await client.close()
     return x
 }
 
@@ -48,13 +48,22 @@ async function getUserRoomByUserId(userId) {
     const [database, client] = await mongoDbClientConnect("mongodb://127.0.0.1:27017/", "userIdMap")
     const collection = database.collection('usermapids')
     let x = await collection.findOne({ userId: userId })
-    client.close()
+    await client.close()
     return x.userRoom
+}
+
+async function getUserNameByUserId (userId) {
+    const [database, client] = await mongoDbClientConnect("mongodb://127.0.0.1:27017/", "userIdMap")
+    const collection = database.collection('usermapids')
+    let x = await collection.findOne({ userId: userId })
+    await client.close()
+    return x.userName
 }
 
 module.exports = {
     getUserDbIdByUserId,
     getUserIdByUserDbId,
     getUserMapObjByUserId,
+    getUserNameByUserId,
     getUserRoomByUserId
 }

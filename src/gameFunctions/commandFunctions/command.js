@@ -5,6 +5,7 @@ const { goDoor } = require('../actions/goDoor')
 const textHelpers = require("../helperFunctions/textHelpers")
 const getObjs = require("../objectFunctions/getObjectFunctions")
 const getUsers = require("../userFunctions/getUserFunctions")
+const { lookRoom } = require('../actions/lookRoom')
 
 async function command(userCom, userId) {
     // processes the user command
@@ -37,7 +38,7 @@ async function executeCommandArray(comArr, userCom, userId, roomName) {
      * @param {String} roomName - name of the room that the user is in
      */
     const action = comArr[0]
-    // examine commands
+    // examine command
     if (action === "x" | action === "examine" && comArr[1]) {
         const objString = userCom.substr(userCom.indexOf(" ") + 1) // Need to do this to convert multi-word descriptions
         const output = await examineObject(roomName, userId, objString)
@@ -46,7 +47,14 @@ async function executeCommandArray(comArr, userCom, userId, roomName) {
         return "Please specify something to examine."
     }
 
-    // take commands
+    // look command
+    const lookActions = ["look", "l"]
+    if (lookActions.includes(action)) {
+        const output = await lookRoom(userId, roomName)
+        return output
+    }
+
+    // take command
     if (action === "take" && comArr[1]) {
         const objString = userCom.substr(userCom.indexOf(" ") + 1) // Need to do this to convert multi-word descriptions
         let output = await takeObject(roomName, userId, objString)
@@ -55,7 +63,7 @@ async function executeCommandArray(comArr, userCom, userId, roomName) {
         return "Please specify something to take."
     }
 
-    // take commands
+    // go command
     if (action === "go" && comArr[1]) {
         const objString = userCom.substr(userCom.indexOf(" ") + 1) // Need to do this to convert multi-word descriptions
         const output = await goDoor(roomName, userId, objString)
@@ -64,7 +72,7 @@ async function executeCommandArray(comArr, userCom, userId, roomName) {
         return "Please specify where to go."
     }
 
-    // put commands
+    // put command
     const putActions = ["put", "set", "place"]
     if (putActions.includes(action) && comArr[1]) {
         let putObj = userCom.match(/(?:put|set|place) (.*?) (?:on|in|inside|atop)/); //the object being moved

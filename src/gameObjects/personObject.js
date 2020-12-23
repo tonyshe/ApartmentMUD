@@ -7,7 +7,6 @@ const {deleteUserInRoomById} = require("../gameFunctions/objectFunctions/deleteO
 const personSchema = new mongoose.Schema({
     userId: {type: String},
     names: {type: [String]},
-    important: {type: Boolean},
     inventory: {type: [String]},
     takeable: {type: Boolean},
     visible: {type: Boolean},
@@ -18,21 +17,23 @@ const personSchema = new mongoose.Schema({
 const userIdMapSchema = new mongoose.Schema({
     userId: {type: String},
     userDbId: {type: String},
+    userName: {type: String},
     userRoom: {type: String}
 })
 
-collectionName = "person"
+
+const collectionName = "person"
 const person = mongoose.model(collectionName, personSchema)
 const userIdEntry = mongoose.model('userMapId', userIdMapSchema)
   
-async function createPerson(objInfo) {
+async function createPerson(objInfo, personSchema, userIdMapSchema) {
     // Setting default values
     // returns user DB ID
     const {
         roomName = 'orphanedPersons',
         names = ['nobody'],
+        userName = 'nobody',
         inventory = [],
-        important = true,
         takeable = false,
         visible = true,
         description = "It's either indescribable or I forgot to write a description for this...",
@@ -44,7 +45,6 @@ async function createPerson(objInfo) {
         names: names,
         userId: userId,
         inventory: inventory,
-        important: important,
         takeable: takeable,
         visible: visible,
         description: description,
@@ -54,31 +54,17 @@ async function createPerson(objInfo) {
     const url = "mongodb://127.0.0.1:27017/"  + roomName;
     await mongoose.connect(url, {useNewUrlParser: true, useUnifiedTopology: true})
 
-    await person.findOne({names: names}).then((result) => {
-        if (result != null) {
-            console.log("Cannot make object with name " + names + ": already exists")
-            mongoose.connection.close()
-            return
-        }
-    })
-
     console.log("Making person: " + names)
     let obj = await person.create({...objProps})
     await mongoose.connection.close()
 
     const personDbUrl = "mongodb://127.0.0.1:27017/userIdMap";
     await mongoose.connect(personDbUrl, {useNewUrlParser: true, useUnifiedTopology: true})
-    await userIdEntry.findOne({userId: userId}).then((result) => {
-        if (result != null) {
-            console.log("Cannot make object with userId " + userId + ": already exists")
-            mongoose.connection.close()
-            return
-        }
-    })
 
     userIdProps = {
         userId: userId,
         userDbId: obj._id,
+        userName: userName,
         userRoom: roomName
     }
 
