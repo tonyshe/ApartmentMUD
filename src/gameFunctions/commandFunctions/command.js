@@ -44,7 +44,7 @@ async function executeCommandArray(comArr, userCom, userId, roomName) {
         const output = await examineObject(roomName, userId, objString)
         return output
     } else if (action === "x" | action === "examine" && comArr.length === 1) {
-        return "Please specify something to examine."
+        return {["Please specify something to examine."]: [userId]}
     }
 
     // look command
@@ -60,7 +60,7 @@ async function executeCommandArray(comArr, userCom, userId, roomName) {
         let output = await takeObject(roomName, userId, objString)
         return output
     } else if (action === "take" && comArr.length === 1) {
-        return "Please specify something to take."
+        return {["Please specify something to take."]: [userId]}
     }
 
     // go command
@@ -69,7 +69,7 @@ async function executeCommandArray(comArr, userCom, userId, roomName) {
         const output = await goDoor(roomName, userId, objString)
         return output
     } else if (action === "go" && comArr.length === 1) {
-        return "Please specify where to go."
+        return {["Please specify where to go."]: [userId]}
     }
 
     // put command
@@ -77,7 +77,7 @@ async function executeCommandArray(comArr, userCom, userId, roomName) {
     if (putActions.includes(action) && comArr[1]) {
         let putObj = userCom.match(/(?:put|set|place) (.*?) (?:on|in|inside|atop)/); //the object being moved
         if (putObj == null) {
-            return 'Please specify where to ' + action + ' that.'
+            return {['Please specify where to ' + action + ' that.']: [userId]}
         }
         else {
             putObj = putObj[1]
@@ -86,9 +86,9 @@ async function executeCommandArray(comArr, userCom, userId, roomName) {
             const allowedPrepositions = ['in', 'on', 'inside', 'atop']
             const preposition = splitPuts[splitPuts.length - 1]
             if (newContainerString == null && allowedPrepositions.includes(preposition)) {
-                return 'Please specify where to ' + action + ' that '+ preposition + '.';
+                return {['Please specify where to ' + action + ' that '+ preposition + '.']: [userId]};
             } else if (newContainerString == null && !allowedPrepositions.includes(preposition)) {
-                return 'Please specify where to ' + action + ' that.'
+                return {['Please specify where to ' + action + ' that.']: [userId]}
             } else {
                 const containerObj = newContainerString[2]
                 const output = await putObject(roomName, userId, putObj, containerObj)
@@ -96,10 +96,10 @@ async function executeCommandArray(comArr, userCom, userId, roomName) {
             }
         }
     } else if (putActions.includes(action) && comArr.length === 1){
-        return "Please specify something to " + action + "."
+        return {["Please specify something to " + action + "."]: [userId]}
     }
 
-    return textHelpers.capitalizeFirstLetter(comArr[0] + " is not a relevant command right now.")
+    return {[textHelpers.capitalizeFirstLetter(comArr[0] + " is not a relevant command right now.")]: [userId]}
 }
 
 module.exports = {

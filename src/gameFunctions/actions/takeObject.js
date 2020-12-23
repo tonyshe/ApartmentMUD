@@ -2,8 +2,16 @@ mongoose = require("mongoose")
 const getObjs = require("../objectFunctions/GetObjectFunctions")
 const { moveObjectToAnotherDb } = require("../objectFunctions/moveObjectFunctions")
 const setObjs = require("../objectFunctions/setObjectFunctions")
+const getUsers = require("../userFunctions/getUserFunctions")
 
 async function takeObject(roomName, userId, objName) {
+    /**
+     * Takes an object from room (or container in a room) and puts it in the user inventory
+     * @param {String} roomName - room db name. the container obj must be in this room
+     * @param {String} userId - user id of the user
+     * @param {String} objName - name of the object to take. must be visible or in inventory of user
+     * @return {String: [String]} - Obj containing message: [userid] keypairs. consumed by the socket handler to give custom messages to users
+     */
     // Search all documents in all collections for a match. Create an array of matching objects
     let foundObjs = await getObjs.getAllVisibleObjsInRoomByName(objName, roomName)
     let foundInvObjs = await getObjs.getAllObjsByNameInInventory(objName, userId)
@@ -11,12 +19,12 @@ async function takeObject(roomName, userId, objName) {
     // Logic depending on how many objects are found
     if (foundObjs.length === 0) {
         if (foundInvObjs.length >= 1) {
-            return "You already have that!"
+            return{["You already have that!"]: [userId]}
         } else {
-            return "No such thing exists."
+            return {["No such thing exists."]: [userId]}
         }
     } else if (foundObjs.length > 1) {
-        return 'There are more than one thing by the name ' + '"' + objName + '." Please be more specific as to which one you mean.'
+        return {['There are more than one thing by the name ' + '"' + objName + '." Please be more specific as to which one you mean.']: [userId]}
     } else if (foundObjs.length === 1) {
         // If only one object is found, run through the take functions
         obj = foundObjs[0]
@@ -38,10 +46,18 @@ async function takeObject(roomName, userId, objName) {
 
             // move the obj from the room db to the user inventory db
             await moveObjectToAnotherDb(obj._id, roomName, "userInventory_" + userId)
+            
+            // get list of userids of everyone else in the room
+            let userIdList =  await getUsers.getAllUserIdsInRoom(roomName)
+            userIdList = userIdList.filter((id) => {return id != userId})
+            const userName = await  getUsers.getUserNameByUserId(userId)
 
-            return 'You take the ' + obj.names[0] + '.'
+            return {
+                ['You take the ' + obj.names[0] + '.']: [userId],
+                [userName + " takes the " + obj.names[0] + '.']: userIdList
+            }
         } else {
-            return 'You cannot take that.'
+            return {['You cannot take that.']: [userId]}
         }
     }
 }
