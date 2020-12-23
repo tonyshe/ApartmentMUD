@@ -41,6 +41,27 @@ async function executeCommandArray(comArr, userCom, userId, roomName) {
     const action = comArr[0]
 
     /**
+     * META COMMANDS
+     */
+
+    const helpActions = ['h', 'help']
+    if (helpActions.includes(action)) {
+        const response = 
+        `<em>
+        "l" or "look": Look around<br>
+        "i": Your inventory<br>
+        "x ___" or "examine ___": Examine something<br>
+        "take ___": Take an object<br>
+        "put ___ on/in ___": Put an object on/in something<br>
+        "open ___" or "close___": Open/close something<br>
+        "go ___": Go somewhere<br><br>
+
+        There are other valid commands that you can make in different situations. Feel free to play around and find them!
+        </em>`
+        return {[response]: [userId]}
+    }
+
+    /**
      * OBSERVATION COMMANDS
      */
 
@@ -66,7 +87,6 @@ async function executeCommandArray(comArr, userCom, userId, roomName) {
         const output = await inventory(userId)
         return output
     }
-
 
     /**
      * OBJECT MANUPULATION COMMANDS
@@ -120,8 +140,6 @@ async function executeCommandArray(comArr, userCom, userId, roomName) {
     } else if (action === "go" && comArr.length === 1) {
         return { ["Please specify where to go."]: [userId] }
     }
-
-
 
     return { [textHelpers.capitalizeFirstLetter(comArr[0] + " is not a relevant command right now.")]: [userId] }
 }
