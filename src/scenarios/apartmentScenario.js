@@ -10,7 +10,7 @@ async function apartmentScenario() {
         {
             roomName: "mud_bedroom",
             names: ['bedroom', 'room'],
-            description: "A simple four-sided room and shag carpet."
+            description: "A simple four-sided bedroom with shag carpet."
         }
     )
     await createRoomObject(
@@ -59,6 +59,13 @@ async function apartmentScenario() {
             roomName: "mud_bedroom",
             names: ["wooden table", "table"],
             description: "A simple wooden table."
+        }
+    )
+    await createContainerObject(
+        {
+            roomName: "mud_bedroom",
+            names: ["carpet", "floor", "shag carpet", "ground"],
+            description: "Off-white fuzzy carpet. Feels good on your toes."
         }
     )
 }

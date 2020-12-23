@@ -5,6 +5,7 @@ const roomObjectSchema = new mongoose.Schema({
     roomName: {type: String},
     important: {type: Boolean},
     takeable: {type: Boolean},
+    visible: {type: Boolean},
     description: {type: String},
     describe: {type: String},
     look: {type: String}
@@ -21,6 +22,7 @@ async function createRoomObject(objInfo) {
         names = ['noname'],
         important = false,
         takeable = false,
+        visible = true,
         description = "It's either indescribable or I forgot to write a description for this...",
         describe = 'baseDescribe',
         look = 'defaultRoomLook'
@@ -32,6 +34,7 @@ async function createRoomObject(objInfo) {
         roomName: roomName,
         important: important,
         takeable: takeable,
+        visible: visible,
         description: description,
         describe: describe,
         look: look
