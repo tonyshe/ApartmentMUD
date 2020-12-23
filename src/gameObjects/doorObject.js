@@ -41,6 +41,7 @@ async function createDoorObjectPair(doorA, doorB) {
         property = "toRoom",
         value = String(doorBObj.roomName)
     )
+    return [String(doorAObj._id), String(doorBObj._id)]
 }
 
 async function createDoorObject(objInfo) {

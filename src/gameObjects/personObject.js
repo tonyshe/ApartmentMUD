@@ -71,7 +71,7 @@ async function createPerson(objInfo, personSchema, userIdMapSchema) {
     await userIdEntry.create({...userIdProps})
     await mongoose.connection.close()
 
-    return obj._id
+    return String(obj._id)
 }
 
 async function deletePerson(userId) {

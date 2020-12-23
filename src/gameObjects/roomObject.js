@@ -53,7 +53,7 @@ async function createRoomObject(objInfo) {
     console.log("  -Making room: " + names)
     let obj = await roomObj.create({...objProps})
     await mongoose.connection.close()
-    return obj._id
+    return String(obj._id)
 }
 
 module.exports = {

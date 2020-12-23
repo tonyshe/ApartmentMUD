@@ -58,7 +58,7 @@ async function createContainerObject(objInfo) {
     await mongoose.connect(url, { useNewUrlParser: true, useUnifiedTopology: true })
     let obj = await containerObj.create({ ...objProps })
     await mongoose.connection.close()
-    return obj._id
+    return String(obj._id)
 }
 
 module.exports = {
