@@ -39,8 +39,8 @@ async function goDoor(roomName, userId, doorName) {
             const userName = await getUsers.getUserNameByUserId(userId)
 
             return {
-                ["You go through the " + door.names[0] + " to the " + door.names[1] + "."]: [userId],
-                [userName + " goes through the " + door.names[0] + " to the " + door.names[1] + "."]: userIdList
+                ["You go " + door.preposition + " the " + door.names[0] + " to the " + door.names[1] + "."]: [userId],
+                [userName + " goes " + door.preposition + " the " + door.names[0] + " to the " + door.names[1] + "."]: userIdList
             }
         }
     }

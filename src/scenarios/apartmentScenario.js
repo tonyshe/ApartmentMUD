@@ -18,9 +18,14 @@ async function apartmentScenario() {
         {
             roomName: "mud_hallway",
             names: ['hallway', 'corridor', 'hall'],
-            description: "A small hallway connecting the bedroom, stairs, and bathroom.",
-            look: 'bedroomLook'
+            description: "A small hallway connecting the bedroom, stairs, and bathroom."
         }
+    )
+    await createRoomObject({
+        roomName: "mud_livingroom",
+        names: ['living room', 'room'],
+        description: 'The main downstairs area.'
+    }
     )
 
     // Make doors
@@ -34,6 +39,20 @@ async function apartmentScenario() {
             names: ['door', 'bedroom', 'bedroom door'],
             roomName: "mud_hallway",
             description: "A door to the bedroom.",
+        }
+    )
+    await createDoorObjectPair(
+        {
+            names: ['stairs', 'living room', 'staircase', 'down', 'downstairs'],
+            roomName: "mud_hallway",
+            description: "Stairs leading down to the living room.",
+            preposition: "down"
+        },
+        {
+            names: ['stairs', 'hallway', 'upstairs', 'up', 'staircase'],
+            roomName: "mud_livingroom",
+            description: "Stairs leading up to the hallway on the second level.",
+            preposition: "up",
         }
     )
 
