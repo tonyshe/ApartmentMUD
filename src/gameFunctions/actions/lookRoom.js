@@ -1,7 +1,7 @@
 const getObjs = require("../objectFunctions/GetObjectFunctions")
 const {lookFunctions} = require("../describeFunctions/describeFunctions")
 
-async function lookRoom(userId, roomName) {
+async function lookRoom(roomName, userId) {
     /**
      * Returns the output of the room's look function
      * @param {String} roomName - room db name

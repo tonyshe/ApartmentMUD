@@ -19,7 +19,7 @@ async function goDoor(roomName, userId, doorName) {
         return { ['There are more than one thing by the name ' + '"' + doorName + '." Please be more specific as to which one you mean.']: [userId] }
     } else if (doors.length === 0) {
         // no door
-        return { ['No such thing exists.']: [userId] }
+        return { ["You don't see that."]: [userId] }
     } else if (doors.length === 1) {
         let door = doors[0]
         if (door.locked) {

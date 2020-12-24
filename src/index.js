@@ -76,7 +76,7 @@ async function envSetup() {
 	const roomDbs = ['userIdMap', 'orphanedObjs']
 	await dropAllRoomDbs(roomDbs)
 	await dropAllGameRooms()
-	await sleep(250)
+	await sleep(100)
 	console.log("Creating world...")
 	await apartmentScenario()	
 

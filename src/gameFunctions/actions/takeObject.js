@@ -21,7 +21,7 @@ async function takeObject(roomName, userId, objName) {
         if (foundInvObjs.length >= 1) {
             return{["You already have that!"]: [userId]}
         } else {
-            return {["No such thing exists."]: [userId]}
+            return {["You don't see that."]: [userId]}
         }
     } else if (foundObjs.length > 1) {
         return {['There are more than one thing by the name ' + '"' + objName + '." Please be more specific as to which one you mean.']: [userId]}
