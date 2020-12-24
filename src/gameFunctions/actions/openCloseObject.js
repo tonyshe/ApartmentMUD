@@ -3,14 +3,21 @@ const setObjs = require("../objectFunctions/setObjectFunctions")
 const getUsers = require("../userFunctions/getUserFunctions")
 const textHelpers = require("../helperFunctions/textHelpers")
 
-async function openContainer(roomName, containerObjName, userId) {
+async function openContainer(roomName, userId, comArr) {
     /**
      * Opens a container, if allowed. sets all things inside to visible
      * @param {String} roomName - db name of the room
-     * @param {String} containerObjName - name of the container to open
+     * @param {[String]} comArr - Array of text commands from the user
      * @param {String} userId - ID of the user doing the action
      * @return {String: [String]} - Obj containing message: [userid] keypairs. consumed by the socket handler to give custom messages to users
      */
+
+    if (comArr.length === 1) {
+        return { ["Please specify something to open."]: [userId] }
+    }
+
+    const containerObjName = comArr.slice(1).join(" ")
+
     // get container obj
     const containerObjs = await getObjs.getAllVisibleObjsInRoomByName(containerObjName, roomName)
 
@@ -58,14 +65,20 @@ async function openContainer(roomName, containerObjName, userId) {
     }
 }
 
-async function closeContainer(roomName, containerObjName, userId) {
+async function closeContainer(roomName, userId, comArr) {
     /**
      * Closes a container, if allowed. sets all things inside to not visible
      * @param {String} roomName - db name of the room
-     * @param {String} containerObjName - name of the container to close
+     * @param {[String]} comArr - Array of text commands from the user
      * @param {String} userId - ID of the user doing the action
      * @return {String: [String]} - Obj containing message: [userid] keypairs. consumed by the socket handler to give custom messages to users
      */
+
+    if (comArr.length === 1) {
+        return { ["Please specify something to " + comArr[0] + "."]: [userId] }
+    }
+    const containerObjName = comArr.slice(1).join(" ")
+
     // get container obj
     const containerObjs = await getObjs.getAllVisibleObjsInRoomByName(containerObjName, roomName)
 

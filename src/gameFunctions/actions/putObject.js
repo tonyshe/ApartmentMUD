@@ -3,7 +3,7 @@ const getUsers = require("../userFunctions/getUserFunctions")
 const { moveObjectToAnotherDb } = require("../objectFunctions/moveObjectFunctions")
 const setObjs = require("../objectFunctions/setObjectFunctions")
 
-async function putObject(roomName, userId, putObjName, containerObjName) {
+async function putObject(roomName, userId, comArr) {
     /**
      * Puts an object from the user inventory in/on a container object. must be in user inventory first!
      * @param {String} roomName - room db name. the container obj must be in this room
@@ -12,6 +12,34 @@ async function putObject(roomName, userId, putObjName, containerObjName) {
      * @param {String} containerObjName - name of the container object to put the item into
      * @return {String: [String]} - Obj containing message: [userid] keypairs. consumed by the socket handler to give custom messages to users
      */
+
+    let putObj = []
+    let userCom = ""
+    
+    if (comArr.length === 1) {
+        return { ["Please specify something to " + comArr[0] + "."]: [userId] }
+    } else {
+        userCom = comArr.join(" ")
+        putObj = userCom.match(/(?:put|set|place) (.*?) (?:on|in|inside|atop)/); 
+        if (putObj == null) {
+            return { ['Please specify where to ' + comArr[0] + ' that.']: [userId] }
+        }
+    }
+
+    const putObjName = putObj[1]
+    const newContainerString = userCom.match(/(?:put|set|place) (.*?) (?:on|in|inside|atop) (.*)/); //the object that will contain putObj
+    const splitPuts = userCom.split(/\s+/);
+    const allowedPrepositions = ['in', 'on', 'inside', 'atop']
+    const preposition = splitPuts[splitPuts.length - 1]
+    console.log(newContainerString)
+    if (newContainerString == null && allowedPrepositions.includes(preposition)) {
+        return { ['Please specify where to ' + action + ' that ' + preposition + '.']: [userId] };
+    } else if (newContainerString == null && !allowedPrepositions.includes(preposition)) {
+        return { ['Please specify where to ' + action + ' that.']: [userId] }
+    }
+
+    let containerObjName = newContainerString[2]
+
     // Multiple or no item checking for put Object
     const invObjList = await getObjs.getAllObjsByNameInInventory(putObjName, userId)
     if (invObjList.length < 1) {

@@ -8,6 +8,7 @@ const getUsers = require("../userFunctions/getUserFunctions")
 const { lookRoom } = require('../actions/lookRoom')
 const { inventory } = require('../actions/inventory')
 const { openContainer, closeContainer } = require('../actions/openCloseObject')
+const { showHelp } = require("../actions/showHelp")
 
 async function command(userCom, userId) {
     // processes the user command
@@ -44,121 +45,47 @@ async function executeCommandArray(comArr, userCom, userId, roomName) {
     /**
      * META COMMANDS
      */
-
     const helpActions = ['h', 'help']
-    if (helpActions.includes(action)) {
-        const response =
-            `<em>
-        "l" or "look": Look around<br>
-        "x ___" or "examine ___": Examine something<br>
-        "take ___": Take an object<br>
-        "i": Your inventory<br>
-        "put ___ on/in ___": Put an object on/in something<br>
-        "open ___" or "close___": Open/close something<br>
-        "go ___": Go somewhere<br><br>
-
-        There are other valid commands that you can make in different situations. Feel free to play around and find them!
-        </em>`
-        return { [response]: [userId] }
-    }
+    if (helpActions.includes(action)) { return await showHelp(userId) }
 
     /**
      * OBSERVATION COMMANDS
      */
-
     // examine command
-    if (action === "x" | action === "examine" && comArr[1]) {
-        const objString = userCom.substr(userCom.indexOf(" ") + 1) // Need to do this to convert multi-word descriptions
-        const output = await examineObject(roomName, userId, objString)
-        return output
-    } else if (action === "x" | action === "examine" && comArr.length === 1) {
-        return { ["Please specify something to examine."]: [userId] }
-    }
+    const examineActions = ['examine', 'x']
+    if (examineActions.includes(action)) { return await examineObject(roomName, userId, comArr) }
 
     // look command
     const lookActions = ["look", "l"]
-    if (lookActions.includes(action)) {
-        const output = await lookRoom(roomName, userId)
-        return output
-    }
+    if (lookActions.includes(action)) { return await lookRoom(roomName, userId) }
 
     // inventory command
     const inventoryActions = ["inventory", "i", "inv"]
-    if (inventoryActions.includes(action)) {
-        const output = await inventory(userId)
-        return output
-    }
+    if (inventoryActions.includes(action)) { return await inventory(userId) }
 
     /**
      * OBJECT MANUPULATION COMMANDS
      */
-
     // take command
-    if (action === "take" && comArr[1]) {
-        const objString = userCom.substr(userCom.indexOf(" ") + 1) // Need to do this to convert multi-word descriptions
-        let output = await takeObject(roomName, userId, objString)
-        return output
-    } else if (action === "take" && comArr.length === 1) {
-        return { ["Please specify something to take."]: [userId] }
-    }
+    const takeActions = ["take"]
+    if (takeActions.includes(action)) { return await takeObject(roomName, userId, comArr) }
 
     // put command
     const putActions = ["put", "set", "place"]
-    if (putActions.includes(action) && comArr[1]) {
-        let putObj = userCom.match(/(?:put|set|place) (.*?) (?:on|in|inside|atop)/); //the object being moved
-        if (putObj == null) {
-            return { ['Please specify where to ' + action + ' that.']: [userId] }
-        }
-        else {
-            putObj = putObj[1]
-            const newContainerString = userCom.match(/(?:put|set|place) (.*?) (?:on|in|inside|atop) (.*)/); //the object that will contain putObj
-            const splitPuts = userCom.split(/\s+/);
-            const allowedPrepositions = ['in', 'on', 'inside', 'atop']
-            const preposition = splitPuts[splitPuts.length - 1]
-            if (newContainerString == null && allowedPrepositions.includes(preposition)) {
-                return { ['Please specify where to ' + action + ' that ' + preposition + '.']: [userId] };
-            } else if (newContainerString == null && !allowedPrepositions.includes(preposition)) {
-                return { ['Please specify where to ' + action + ' that.']: [userId] }
-            } else {
-                const containerObj = newContainerString[2]
-                const output = await putObject(roomName, userId, putObj, containerObj)
-                return output
-            }
-        }
-    } else if (putActions.includes(action) && comArr.length === 1) {
-        return { ["Please specify something to " + action + "."]: [userId] }
-    }
+    if (putActions.includes(action)) { return await putObject(roomName, userId, comArr) }
 
     const openAction = ["open"]
-    if (openAction.includes(action) && comArr[1]) {
-        const objString = userCom.substr(userCom.indexOf(" ") + 1) // Need to do this to convert multi-word descriptions
-        let output = await openContainer(roomName, objString, userId)
-        return output
-    } else if (openAction.includes(action) && comArr.length === 1) {
-        return { ["Please specify something to open."]: [userId] }
-    }
+    if (openAction.includes(action)) { return await openContainer(roomName, userId, comArr) }
 
     const closeAction = ["close", "shut"]
-    if (closeAction.includes(action) && comArr[1]) {
-        const objString = userCom.substr(userCom.indexOf(" ") + 1) // Need to do this to convert multi-word descriptions
-        let output = await closeContainer(roomName, objString, userId)
-        return output
-    } else if (closeAction.includes(action) && comArr.length === 1) {
-        return { ["Please specify something to " + action + "."]: [userId] }
-    }
+    if (closeAction.includes(action)) { return await closeContainer(roomName, userId, comArr) }
 
     /**
      * MOVEMENT COMMANDS
      */
-
     // go command
-    if (action === "go" && comArr[1]) {
-        const objString = userCom.substr(userCom.indexOf(" ") + 1) // Need to do this to convert multi-word descriptions
-        const output = await goDoor(roomName, userId, objString)
-        return output
-    } else if (action === "go" && comArr.length === 1) {
-        return { ["Please specify where to go."]: [userId] }
-    }
+    const goActions = ["go"]
+    if (goActions.includes("go")) { return await goDoor(roomName, userId, comArr) }
 
     return { [textHelpers.capitalizeFirstLetter(comArr[0] + " is not a relevant command right now.")]: [userId] }
 }
