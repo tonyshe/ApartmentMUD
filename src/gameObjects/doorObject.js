@@ -7,7 +7,8 @@ let doorObjectSchemaAddons = {
     toRoom: { type: String },
     open: { type: Boolean },
     locked: { type: Boolean },
-    linkedDoor: { type: String }
+    linkedDoor: { type: String },
+    preposition: { type: String }
 }
 
 const doorObjectSchema = new mongoose.Schema({
@@ -62,7 +63,8 @@ async function createDoorObject(objInfo) {
         takeable = false,
         description = "It's either indescribable or I forgot to write a description for this...",
         describe = 'baseDescribe',
-        visible = true
+        visible = true,
+        preposition = 'through'
     } = objInfo
 
     objProps = {
@@ -76,7 +78,8 @@ async function createDoorObject(objInfo) {
         takeable: takeable,
         description: description,
         describe: describe,
-        visible: visible
+        visible: visible,
+        preposition: preposition
     }
 
     const url = "mongodb://127.0.0.1:27017/" + roomName

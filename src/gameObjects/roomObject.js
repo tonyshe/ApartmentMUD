@@ -8,9 +8,11 @@ const roomObjectSchema = new mongoose.Schema({
     visible: {type: Boolean},
     description: {type: String},
     describe: {type: String},
-    look: {type: String}
+    look: {type: String},
+    roomVars: { type: Object }
     },
-    {collection: "room"}
+    {collection: "room",
+     minimize: false}
 );
 collectionName = "room"
 
@@ -25,7 +27,8 @@ async function createRoomObject(objInfo) {
         visible = true,
         description = "It's either indescribable or I forgot to write a description for this...",
         describe = 'baseDescribe',
-        look = 'defaultRoomLook'
+        look = 'defaultRoomLook',
+        roomVars = {}
     } = objInfo;
 
     // Obj payload for mongodb
@@ -37,7 +40,8 @@ async function createRoomObject(objInfo) {
         visible: visible,
         description: description,
         describe: describe,
-        look: look
+        look: look,
+        roomVars: roomVars
     }
     const url = "mongodb://127.0.0.1:27017/"  + roomName;
     await mongoose.connect(url, {useNewUrlParser: true, useUnifiedTopology: true})
