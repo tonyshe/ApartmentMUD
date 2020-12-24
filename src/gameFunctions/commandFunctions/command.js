@@ -7,6 +7,7 @@ const getObjs = require("../objectFunctions/getObjectFunctions")
 const getUsers = require("../userFunctions/getUserFunctions")
 const { lookRoom } = require('../actions/lookRoom')
 const { inventory } = require('../actions/inventory')
+const { openContainer, closeContainer } = require('../actions/openCloseObject')
 
 async function command(userCom, userId) {
     // processes the user command
@@ -46,19 +47,19 @@ async function executeCommandArray(comArr, userCom, userId, roomName) {
 
     const helpActions = ['h', 'help']
     if (helpActions.includes(action)) {
-        const response = 
-        `<em>
+        const response =
+            `<em>
         "l" or "look": Look around<br>
-        "i": Your inventory<br>
         "x ___" or "examine ___": Examine something<br>
         "take ___": Take an object<br>
+        "i": Your inventory<br>
         "put ___ on/in ___": Put an object on/in something<br>
         "open ___" or "close___": Open/close something<br>
         "go ___": Go somewhere<br><br>
 
         There are other valid commands that you can make in different situations. Feel free to play around and find them!
         </em>`
-        return {[response]: [userId]}
+        return { [response]: [userId] }
     }
 
     /**
@@ -77,7 +78,7 @@ async function executeCommandArray(comArr, userCom, userId, roomName) {
     // look command
     const lookActions = ["look", "l"]
     if (lookActions.includes(action)) {
-        const output = await lookRoom(userId, roomName)
+        const output = await lookRoom(roomName, userId)
         return output
     }
 
@@ -125,6 +126,24 @@ async function executeCommandArray(comArr, userCom, userId, roomName) {
             }
         }
     } else if (putActions.includes(action) && comArr.length === 1) {
+        return { ["Please specify something to " + action + "."]: [userId] }
+    }
+
+    const openAction = ["open"]
+    if (openAction.includes(action) && comArr[1]) {
+        const objString = userCom.substr(userCom.indexOf(" ") + 1) // Need to do this to convert multi-word descriptions
+        let output = await openContainer(roomName, objString, userId)
+        return output
+    } else if (openAction.includes(action) && comArr.length === 1) {
+        return { ["Please specify something to open."]: [userId] }
+    }
+
+    const closeAction = ["close", "shut"]
+    if (closeAction.includes(action) && comArr[1]) {
+        const objString = userCom.substr(userCom.indexOf(" ") + 1) // Need to do this to convert multi-word descriptions
+        let output = await closeContainer(roomName, objString, userId)
+        return output
+    } else if (closeAction.includes(action) && comArr.length === 1) {
         return { ["Please specify something to " + action + "."]: [userId] }
     }
 

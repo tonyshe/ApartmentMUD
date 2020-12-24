@@ -1,4 +1,3 @@
-mongoose = require("mongoose")
 const getObjs = require("../objectFunctions/GetObjectFunctions")
 const getUsers = require("../userFunctions/getUserFunctions")
 const { moveObjectToAnotherDb } = require("../objectFunctions/moveObjectFunctions")
@@ -34,7 +33,7 @@ async function putObject(roomName, userId, putObjName, containerObjName) {
 
     // check if container is closed
     if (!containerObj.open) {
-        return { ["The " + containerObj.names[0] + " is closed."]: [userId] }
+        return { ["You can't do that. The " + containerObj.names[0] + " is closed."]: [userId] }
     }
 
     // Check if object is allowed in/on the container

@@ -26,7 +26,7 @@ async function examineObject(roomName, userId, objName) {
 
     // Logic depending on how many objects are found
     if (foundObjs.length === 0) {
-        return {["No such thing exists."]: [userId]}
+        return {["You don't see that."]: [userId]}
     } else if (foundObjs.length > 1) {
         const response = 'There are more than one thing by the name ' + '"' + objName + '." Please be more specific as to which one you mean.'
         return {[response]: [userId]}

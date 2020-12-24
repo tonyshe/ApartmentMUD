@@ -62,7 +62,19 @@ async function apartmentScenario() {
             description: "A simple wooden table.",
         }
     )
-    await putObjectAdmin(sandwichId, tableId, "mud_bedroom")
+    const drawerId = await createContainerObject(
+        {
+            roomName: "mud_bedroom",
+            names: [ "drawer", 'd'],
+            description: "A drawer.",
+            important: true,
+            open: false,
+            closeable: true,
+            preposition: 'in'
+        }
+    )
+    await putObjectAdmin(sandwichId, drawerId, "mud_bedroom")
+    
 
     await createContainerObject(
         {
