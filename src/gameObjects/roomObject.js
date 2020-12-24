@@ -27,7 +27,7 @@ async function createRoomObject(objInfo) {
         visible = true,
         description = "It's either indescribable or I forgot to write a description for this...",
         describe = 'baseDescribe',
-        look = 'defaultRoomLook',
+        look = 'defaultLook',
         roomVars = {}
     } = objInfo;
 
