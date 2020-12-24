@@ -29,7 +29,7 @@ const describeFunctions = {
 }
 
 const lookFunctions = {
-    "defaultRoomLook": async (userId, roomObj) => {
+    "defaultLook": async (userId, roomObj) => {
         let outString = roomObj.description
 
         // listing important objects
