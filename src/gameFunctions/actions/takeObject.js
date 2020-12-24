@@ -4,14 +4,21 @@ const { moveObjectToAnotherDb } = require("../objectFunctions/moveObjectFunction
 const setObjs = require("../objectFunctions/setObjectFunctions")
 const getUsers = require("../userFunctions/getUserFunctions")
 
-async function takeObject(roomName, userId, objName) {
+async function takeObject(roomName, userId, comArr) {
     /**
      * Takes an object from room (or container in a room) and puts it in the user inventory
      * @param {String} roomName - room db name. the container obj must be in this room
      * @param {String} userId - user id of the user
-     * @param {String} objName - name of the object to take. must be visible or in inventory of user
+     * @param {[String]} comArr - Array of text commands from the user
      * @return {String: [String]} - Obj containing message: [userid] keypairs. consumed by the socket handler to give custom messages to users
      */
+
+    if (comArr.length === 1) {
+        return { ["Please specify something to take."]: [userId] }
+    }
+
+    const objName = comArr.slice(1).join(" ")
+
     // Search all documents in all collections for a match. Create an array of matching objects
     let foundObjs = await getObjs.getAllVisibleObjsInRoomByName(objName, roomName)
     let foundInvObjs = await getObjs.getAllObjsByNameInInventory(objName, userId)
