@@ -4,6 +4,14 @@ const getUsers = require("../userFunctions/getUserFunctions")
 const textHelpers = require("../helperFunctions/textHelpers")
 
 async function openContainer(roomName, containerObjName, userId) {
+    /**
+     * Opens a container, if allowed. sets all things inside to visible
+     * @param {String} roomName - db name of the room
+     * @param {String} containerObjName - name of the container to open
+     * @param {String} userId - ID of the user doing the action
+     * @return {String: [String]} - Obj containing message: [userid] keypairs. consumed by the socket handler to give custom messages to users
+     */
+    // get container obj
     const containerObjs = await getObjs.getAllVisibleObjsInRoomByName(containerObjName, roomName)
 
     if (containerObjs.length === 0) {
@@ -51,6 +59,13 @@ async function openContainer(roomName, containerObjName, userId) {
 }
 
 async function closeContainer(roomName, containerObjName, userId) {
+    /**
+     * Closes a container, if allowed. sets all things inside to not visible
+     * @param {String} roomName - db name of the room
+     * @param {String} containerObjName - name of the container to close
+     * @param {String} userId - ID of the user doing the action
+     * @return {String: [String]} - Obj containing message: [userid] keypairs. consumed by the socket handler to give custom messages to users
+     */
     // get container obj
     const containerObjs = await getObjs.getAllVisibleObjsInRoomByName(containerObjName, roomName)
 
