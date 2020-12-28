@@ -47,6 +47,15 @@
         onfocus="this.placeholder =''" onblur="this.placeholder='Enter a command or type &quot;help&quot;'">
 </form>
 
+<div id="react-root">
+
+</div>
+
+<script src="https://unpkg.com/react@17/umd/react.development.js" crossorigin></script>
+<script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js" crossorigin></script>
+
+<!-- Load our React component. -->
+<script src="like_button.js"></script>
 </body>
 <script src="/socket.io/socket.io.js"></script>
 <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
@@ -91,13 +100,13 @@
         socket.on('chat message_' + userId, function (msg) {
             // determine if the user was at the bottom of the page before a new message is given
             let atBottom = false
-            if ($(document).scrollTop() + $(window).height() === $(document).height()) {atBottom = true}
+            if ($(document).scrollTop() + $(window).height() === $(document).height()) { atBottom = true }
 
             // add new message
             newMessage(msg);
-            
+
             // scroll to the bottom if the user was orignally at the bottom
-            if (atBottom) {$(document).scrollTop($(document).height())}; //scroll to bottom
+            if (atBottom) { $(document).scrollTop($(document).height()) }; //scroll to bottom
         });
 
         socket.on("disconnect", () => {
@@ -107,6 +116,5 @@
         })
     });
 </script>
-<script></script>
 
 </html>

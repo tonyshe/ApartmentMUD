@@ -40,7 +40,7 @@ const lookFunctions = {
             outString += ' ' + textHelpers.capitalizeFirstLetter(wordList[0] + ' ' + wordList[1] + ' ' + ' in the ' + roomObj.names[0] + '.');
         };
 
-        const peopleObjArray = await getObjs.getAllPeopleInRoom(roomName)
+        const peopleObjArray = await getObjs.getAllPeopleInRoom(roomObj.roomName)
         const userName = await getUsers.getUserNameByUserId(userId)
         const peopleNamesArray = await peopleObjArray.map((obj) => { return obj.names[0] })
         const otherPeopleNamesArray = await peopleNamesArray.filter((name) => {return (name != userName)})

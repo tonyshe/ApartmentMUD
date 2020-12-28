@@ -1,18 +1,26 @@
 const app = require('express')();
+const cors = require('cors')
+const express = require('express');
+const path = require('path')
 const http = require('http').createServer(app);
-const io = require('socket.io')(http);
+const options = {cors: true, origins: ["http://127.0.0.1:3000"]}
+const io = require('socket.io')(http, options);
 const { create } = require('domain');
 const { command } = require("../gameFunctions/commandFunctions/command")
-const {createPerson, deletePerson} = require("../gameObjects/personObject")
-const {makeRandomWord} = require("../gameFunctions/helperFunctions/gameHelpers")
+const { createPerson, deletePerson } = require("../gameObjects/personObject")
+const { makeRandomWord } = require("../gameFunctions/helperFunctions/gameHelpers")
 const fetch = require("node-fetch")
 
 
+
 async function setupSocket() {
-    app.get('/', (req, res) => {
-        res.sendFile(__dirname + '/index.html');
-    });
-    
+    // app.get('/', (req, res) => {
+    //     // res.sendFile(__dirname + '/like_button.js')
+    //     res.sendFile(__dirname + '/index.html');
+    //     app.use(express.static(path.join(__dirname, 'public')));
+
+    // });
+
     await io.on('connection', async (socket) => {
         await socket.on('userId', async (userId) => {
             console.log('User logon and Id created: ' + userId)
@@ -24,10 +32,10 @@ async function setupSocket() {
             const randomName = randomNameArray[0]
             // const randomName = await makeRandomWord(6)
             await createPerson({
-                roomName: "mud_bedroom", 
-                names: [randomName, "person"], 
+                roomName: "mud_bedroom",
+                names: [randomName, "person"],
                 userName: randomName,
-                description: "It's your friend " + randomName + ".", 
+                description: "It's your friend " + randomName + ".",
                 userId: userId
             })
         });
@@ -36,9 +44,9 @@ async function setupSocket() {
             // msg is an array of [user submitted message, userid]
             let returnMsg = await command(msg[0], socket.userId)
             let returnMsgList = Object.entries(returnMsg)
-            for (let i=0; i < returnMsgList.length; i++) {
-                for (let j=0; j < returnMsgList[i][1].length; j++) {
-                    await io.emit('chat message_'+returnMsgList[i][1][j] , returnMsgList[i][0])
+            for (let i = 0; i < returnMsgList.length; i++) {
+                for (let j = 0; j < returnMsgList[i][1].length; j++) {
+                    await io.emit('chat message_' + returnMsgList[i][1][j], returnMsgList[i][0])
                 }
             };
         });
@@ -50,10 +58,10 @@ async function setupSocket() {
             await socket.leave(socket.room);
         });
     });
-
-    http.listen(3000, () => {
+    app.use(cors())
+    io.listen(4000, () => {
         console.log('-----')
-        console.log('listening on *:3000')
+        console.log('listening on *:4000')
         console.log('-----')
     });
 }

@@ -57,7 +57,7 @@ async function executeCommandArray(comArr, userCom, userId, roomName) {
 
     // look command
     const lookActions = ["look", "l"]
-    if (lookActions.includes(action)) { return await lookRoom(roomName, userId) }
+    if (lookActions.includes(action)) {return await lookRoom(roomName, userId) }
 
     // inventory command
     const inventoryActions = ["inventory", "i", "inv"]
@@ -85,7 +85,7 @@ async function executeCommandArray(comArr, userCom, userId, roomName) {
      */
     // go command
     const goActions = ["go"]
-    if (goActions.includes("go")) { return await goDoor(roomName, userId, comArr) }
+    if (goActions.includes(action)) { return await goDoor(roomName, userId, comArr) }
 
     return { [textHelpers.capitalizeFirstLetter(comArr[0] + " is not a relevant command right now.")]: [userId] }
 }
