@@ -1,7 +1,6 @@
 import './App.css';
 import socketIOClient from "socket.io-client"
-import React, { useEffect, useState, setState, useRef } from 'react'
-const io = require('socket.io')
+import React, { useEffect } from 'react'
 
 const userId = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
 const ENDPOINT = "http://localhost:4000"
@@ -11,8 +10,6 @@ socket.on('connect', () => {
 })
 
 function App() {
-
-
 
 	useEffect(() => {
 		socket.on('chat message_' + userId, function (msg) {
@@ -26,11 +23,8 @@ function App() {
 
 	useEffect(() => {
 		socket.on("disconnect", (e) => {
-			if (document.getElementById('command')) {
-				newMessage("<p style='background-color:salmon;'><b>You have been disconnected. Please refresh.</b></p>");
-				document.getElementById('command').remove()
-			}
-
+			newMessage("<p style='background-color:salmon;'><b>You have been disconnected. Please refresh.</b></p>");
+			document.getElementById('command').remove()
 			socket.disconnect()
 		})
 	})
