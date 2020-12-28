@@ -23,6 +23,7 @@ async function getUserDbIdByUserId(userId) {
     const collection = database.collection('usermapids')
     let x = await collection.findOne({ userId: userId })
     await client.close()
+    // maybe add a retry here in the future
     return x.userDbId
 }
 

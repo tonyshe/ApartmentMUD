@@ -122,6 +122,7 @@ async function getAllObjectsInInventory(userId) {
 }
 
 async function getAllPeopleInRoom(roomName) {
+    console.log(roomName)
     const [database, client] = await mongoDbClientConnect("mongodb://127.0.0.1:27017/", roomName)
     const people = await database.collection('people').find().toArray()
     await client.close()
