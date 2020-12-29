@@ -3,39 +3,31 @@ const cors = require('cors')
 const express = require('express');
 const path = require('path')
 const http = require('http').createServer(app);
-const options = {cors: true, origins: ["http://127.0.0.1:3000"]}
+const options = { cors: true, origins: ["http://127.0.0.1:3000"] }
 const io = require('socket.io')(http, options);
 const { create } = require('domain');
 const { command } = require("../gameFunctions/commandFunctions/command")
 const { createPerson, deletePerson } = require("../gameObjects/personObject")
 const { makeRandomWord } = require("../gameFunctions/helperFunctions/gameHelpers")
 const fetch = require("node-fetch")
-
-
+const getObjs = require('../gameFunctions/objectFunctions/getObjectFunctions')
+const textHelpers = require("../gameFunctions/helperFunctions/textHelpers")
 
 async function setupSocket() {
-    // app.get('/', (req, res) => {
-    //     // res.sendFile(__dirname + '/like_button.js')
-    //     res.sendFile(__dirname + '/index.html');
-    //     app.use(express.static(path.join(__dirname, 'public')));
-
-    // });
 
     await io.on('connection', async (socket) => {
-        await socket.on('userId', async (userId) => {
+        await socket.on('userinfo', async (userInfo) => {
+            const userId = userInfo[0]
+            const userName = userInfo[1].toLowerCase()
             console.log('User logon and Id created: ' + userId)
             socket.userId = userId
             await socket.join('lobby')
             socket.room = "lobby"
-            const randomNameArrayRaw = await fetch('http://names.drycodes.com/1')
-            const randomNameArray = await randomNameArrayRaw.json()
-            const randomName = randomNameArray[0]
-            // const randomName = await makeRandomWord(6)
             await createPerson({
                 roomName: "mud_bedroom",
-                names: [randomName, "person"],
-                userName: randomName,
-                description: "It's your friend " + randomName + ".",
+                names: [userName, "person"],
+                userName: userName,
+                description: "It's your friend " + textHelpers.capitalizeFirstLetter(userName) + ".",
                 userId: userId
             })
         });
@@ -51,13 +43,29 @@ async function setupSocket() {
             };
         });
 
-        await socket.on('disconnect', async (msg) => {
-            console.log('user disconnected: ' + socket.userId);
-            // socket.broadcast.to(socket.room).emit(socket.userId)
-            await deletePerson(socket.userId)
+        await socket.on('disconnect', async () => {
+            if (socket.userId) {
+                console.log('user disconnected: ' + socket.userId);
+                await deletePerson(socket.userId)
+                socket.userId = ""
+            }
             await socket.leave(socket.room);
         });
+
+        await socket.on('userquery', async (queryInfo) => {
+            console.log('triggered!')
+            const userObjList = await getObjs.getAllPeopleInRoom("mud_bedroom")
+            const userNameList = userObjList.map((obj) => {return obj.names[0]})
+            if (userNameList.includes(queryInfo[0].toLowerCase())) {
+                await io.emit('query_'+queryInfo[1], 'duplicate')
+                console.log('query_'+queryInfo[1])
+                console.log(userNameList)
+            } else {
+                await io.emit('query_'+queryInfo[1], 'no_duplicate')
+            }
+        });
     });
+
     app.use(cors())
     io.listen(4000, () => {
         console.log('-----')

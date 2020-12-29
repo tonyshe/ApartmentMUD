@@ -3,6 +3,7 @@ const getObjs = require("../objectFunctions/GetObjectFunctions")
 const getUsers = require("../userFunctions/getUserFunctions")
 const { describeFunctions } = require("../describeFunctions/describeFunctions")
 const { response } = require("express")
+const textHelpers = require("../helperFunctions/textHelpers")
 
 async function examineObject(roomName, userId, comArr) {
     /**
@@ -23,7 +24,7 @@ async function examineObject(roomName, userId, comArr) {
 
     if (selfWords.includes(objName)) {
         const userName = await getUsers.getUserNameByUserId(userId)
-        return { ["Hey look it's you, " + userName + "."]: [userId] }
+        return { ["Hey look it's you, " + textHelpers.capitalizeFirstLetter(userName) + "."]: [userId] }
     }
 
     // Search all documents in all collections for a match. Create an array of matching objects
