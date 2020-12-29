@@ -36,7 +36,7 @@ async function apartmentScenario() {
             description: "A door to the hallway.",
         },
         {
-            names: ['door', 'bedroom', 'bedroom door'],
+            names: ['door', 'bedroom', 'bedroom door', 'room'],
             roomName: "mud_hallway",
             description: "A door to the bedroom.",
         }
