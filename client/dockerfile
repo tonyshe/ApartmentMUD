@@ -16,5 +16,8 @@ COPY . /client/
 # Make port 3000 available to the world outside this container
 EXPOSE 3000
 
+# Set mongodb network name env variable
+ENV REACT_APP_SERVER_NAME=159.65.79.105
+
 # Run the app when the container launches
 CMD ["npm", "start"]

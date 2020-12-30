@@ -4,6 +4,8 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 
+global.serverName = process.env.REACT_APP_SERVER_NAME || "localhost"
+console.log(global.serverName)
 
 ReactDOM.render(
   <React.StrictMode>
