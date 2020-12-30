@@ -1,0 +1,10 @@
+#ignore mongo data directory
+data-node/
+
+#ignore client directory (has its own dockerfile)
+client/
+
+#git related stuff
+.gitignore
+*.md
+example.png

@@ -1,0 +1,6 @@
+#Ignore git stuff
+.gitignore
+*.md
+
+# react build stuff
+build/
