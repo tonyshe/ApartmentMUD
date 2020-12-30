@@ -1,16 +1,20 @@
 // imports
 const MongoClient = require('mongodb').MongoClient;
-const scriptHelpers = require("./gameFunctions/helperFunctions/scriptHelpers")
-const { setupSocket } = require("./socket/socketSetup")
+const scriptHelpers = require("./src/gameFunctions/helperFunctions/scriptHelpers")
+const { setupSocket } = require("./src/socket/socketSetup")
 
 // Scenarios
-const {apartmentScenario} = require("./scenarios/apartmentScenario")
+const {apartmentScenario} = require("./src/scenarios/apartmentScenario")
 
 // aux functions
-const { sleep } = require('./gameFunctions/helperFunctions/scriptHelpers')
+const { sleep } = require('./src/gameFunctions/helperFunctions/scriptHelpers')
+
+global.mongoDbAddress = process.env.MONGO_ADDRESS || "127.0.0.1"
+
+console.log(mongoDbAddress)
 
 async function dropAllRoomDbs(roomDbs) {
-	const baseUrl = "mongodb://127.0.0.1:27017/"
+	const baseUrl = "mongodb://" + global.mongoDbAddress + ":27017/"
 	for (let i = 0; i < roomDbs.length; i++) {
 		let url = baseUrl + roomDbs[i]
 		let client = await MongoClient.connect(url, { useNewUrlParser: true, useUnifiedTopology: true })
@@ -25,7 +29,7 @@ async function dropAllRoomDbs(roomDbs) {
 
 async function dropAllUserInventories() {
 	// ugh basically does the same thing as drop all room dbs but this parses the db list for the string "userInventory_"
-	const baseUrl = "mongodb://127.0.0.1:27017/"
+	const baseUrl = "mongodb://" + global.mongoDbAddress + ":27017/"
 	let client = await MongoClient.connect(baseUrl, { useNewUrlParser: true, useUnifiedTopology: true })
 	let db_list = await client.db().admin().listDatabases()
 	await client.close()
@@ -47,7 +51,7 @@ async function dropAllUserInventories() {
 
 async function dropAllGameRooms() {
 	// ugh basically does the same thing as drop all room dbs but this parses the db list for the string "mud_"
-	const baseUrl = "mongodb://127.0.0.1:27017/"
+	const baseUrl = "mongodb://" + global.mongoDbAddress + ":27017/"
 	let client = await MongoClient.connect(baseUrl, { useNewUrlParser: true, useUnifiedTopology: true })
 	let db_list = await client.db().admin().listDatabases()
 	await client.close()

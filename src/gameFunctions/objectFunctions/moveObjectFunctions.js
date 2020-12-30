@@ -12,8 +12,8 @@ async function moveObjectToAnotherDb(objId, fromDb, toDb) {
      * @return {String} Name of the collection that the obj is now in (should be the same as from db)
      */
     const [obj, collName] = await getObjs.getObjByDbIdAndRoom(objId, fromDb)
-    const [fromDatabase,fromClient] = await mongoDbClientConnect("mongodb://127.0.0.1:27017/", fromDb)
-    const [toDatabase,toClient] = await mongoDbClientConnect("mongodb://127.0.0.1:27017/", toDb)
+    const [fromDatabase,fromClient] = await mongoDbClientConnect("mongodb://" + global.mongoDbAddress + ":27017/", fromDb)
+    const [toDatabase,toClient] = await mongoDbClientConnect("mongodb://" + global.mongoDbAddress + ":27017/", toDb)
     console.log("Moving " + obj.names[0] + " from " + fromDb + " to " + toDb)
     await fromDatabase.collection(collName).deleteOne(obj)
     await toDatabase.collection(collName).insertOne(obj)
@@ -35,12 +35,12 @@ async function moveUserIdToAnotherRoom(userId, toRoomName) {
     
     let userDbId = await getUsers.getUserDbIdByUserId(userId)
     let [userObj, collName] = await getObjs.getObjByDbIdAndRoom(userDbId, fromRoomName)
-    const [fromDatabase,fromClient] = await mongoDbClientConnect("mongodb://127.0.0.1:27017/", fromRoomName)
+    const [fromDatabase,fromClient] = await mongoDbClientConnect("mongodb://" + global.mongoDbAddress + ":27017/", fromRoomName)
     await fromDatabase.collection(collName).deleteOne(userObj)
     await fromClient.close()
 
     // Add user into new room
-    const [toDatabase,toClient] = await mongoDbClientConnect("mongodb://127.0.0.1:27017/", toRoomName)
+    const [toDatabase,toClient] = await mongoDbClientConnect("mongodb://" + global.mongoDbAddress + ":27017/", toRoomName)
     await toDatabase.collection(collName).insertOne(userObj)
     await toClient.close()
     

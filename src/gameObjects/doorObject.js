@@ -82,7 +82,7 @@ async function createDoorObject(objInfo) {
         preposition: preposition
     }
 
-    const url = "mongodb://127.0.0.1:27017/" + roomName
+    const url = "mongodb://" + global.mongoDbAddress + ":27017/" + roomName
     console.log("  -Making door: " + names)
     await mongoose.connect(url, { useNewUrlParser: true, useUnifiedTopology: true })
     let obj = await doorObj.create({ ...objProps })

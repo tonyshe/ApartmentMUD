@@ -1,4 +1,4 @@
-const getObjs = require("../objectFunctions/GetObjectFunctions")
+const getObjs = require("../objectFunctions/getObjectFunctions")
 const textHelpers = require("../helperFunctions/textHelpers")
 
 async function inventory(userId) {

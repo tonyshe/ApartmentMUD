@@ -1,5 +1,5 @@
 mongoose = require("mongoose")
-const getObjs = require("../objectFunctions/GetObjectFunctions")
+const getObjs = require("../objectFunctions/getObjectFunctions")
 const getUsers = require("../userFunctions/getUserFunctions")
 const { describeFunctions } = require("../describeFunctions/describeFunctions")
 const { response } = require("express")
