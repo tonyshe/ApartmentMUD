@@ -3,17 +3,21 @@ services:
     client:
         build: ./client
         restart: always
+        container_name: mudclient
         ports:
             - "3000:3000"
         volumes:
             - ./client:/client
             - /client/node_modules
+        depends_on:
+            - aptmud
         links:
             - aptmud
         networks:
             - frontnet
     aptmud:
         build: ./
+        container_name: aptmud
         restart: always
         ports:
             - "4000:4000"

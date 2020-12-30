@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react'
 
 
 function MudInterface({ username, userId }) {
-    const ENDPOINT = "http://localhost:4000"
+    const ENDPOINT = "http://" + global.serverName + ":4000"
     const socket = socketIOClient(ENDPOINT);
 
     useEffect(() => {

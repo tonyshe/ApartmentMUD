@@ -2,8 +2,9 @@ import React, { useState, useEffect } from 'react'
 import socketIOClient from "socket.io-client"
 import "./Styles/SplashScreen.css"
 
+
 function SplashScreen({ mudLogin }) {
-    const ENDPOINT = "http://localhost:4000"
+    const ENDPOINT = "http://" + global.serverName + ":4000"
     const socket = socketIOClient(ENDPOINT);
     const queryId = Math.random().toString(36).substring(2, 15)
 
