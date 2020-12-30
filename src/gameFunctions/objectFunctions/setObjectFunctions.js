@@ -12,7 +12,7 @@ async function setObjectPropertyByDbIdAndRoomName(objDbId, roomName, property, v
      * @return {Object} - Object that matches the DB id supplied
      */
     let [obj,collectionName] = await getObjs.getObjByDbIdAndRoom(objDbId, roomName)
-    const [database,client] = await mongoDbClientConnect("mongodb://127.0.0.1:27017/", roomName)
+    const [database,client] = await mongoDbClientConnect("mongodb://" + global.mongoDbAddress + ":27017/", roomName)
     await database.collection(collectionName).updateOne(obj, {$set: {...obj, [property]: value}})
     await client.close()
     return obj
@@ -20,7 +20,7 @@ async function setObjectPropertyByDbIdAndRoomName(objDbId, roomName, property, v
 
 async function setUserRoomByUserId(userId, newRoom) {
     const userObj = await getUsers.getUserMapObjByUserId(userId)
-    const [database,client] = await mongoDbClientConnect("mongodb://127.0.0.1:27017/", "userIdMap")
+    const [database,client] = await mongoDbClientConnect("mongodb://" + global.mongoDbAddress + ":27017/", "userIdMap")
     await database.collection("usermapids").updateOne(userObj, {$set: {...userObj, "userRoom": newRoom}})
     await client.close()
 }

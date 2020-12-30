@@ -1,4 +1,4 @@
-const getObjs = require("../objectFunctions/GetObjectFunctions")
+const getObjs = require("../objectFunctions/getObjectFunctions")
 const getUsers = require("../userFunctions/getUserFunctions")
 const { moveObjectToAnotherDb } = require("../objectFunctions/moveObjectFunctions")
 const setObjs = require("../objectFunctions/setObjectFunctions")

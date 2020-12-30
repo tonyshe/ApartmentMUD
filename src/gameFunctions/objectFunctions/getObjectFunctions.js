@@ -6,7 +6,7 @@ async function getAllCollectionsInRoom(roomName) {
      * @param {String} roomName - name of the room
      * @param {[String]} Array of strings representing the collections inside the room
      */
-    const [database, client] = await mongoDbClientConnect("mongodb://127.0.0.1:27017/", roomName)
+    const [database, client] = await mongoDbClientConnect("mongodb://" + global.mongoDbAddress + ":27017/", roomName)
     let collectionObjList = await database.listCollections().toArray()
     let collectionNameList = []
     for (let i = 0; i < collectionObjList.length; i++) {
@@ -22,7 +22,7 @@ async function getAllDoorsInRoom(roomName) {
      * @param {String} roomName - Name of the room
      * @return {[Object]} - returns a list of door objects
      */
-    const [database, client] = await mongoDbClientConnect("mongodb://127.0.0.1:27017/", roomName)
+    const [database, client] = await mongoDbClientConnect("mongodb://" + global.mongoDbAddress + ":27017/", roomName)
     let doors = await database.collection("doors").find().toArray()
     await client.close()
     return doors
@@ -36,7 +36,7 @@ async function getAllObjectsInRoom(roomName) {
      */
     // Returns a list of all objects in a room
     let objCollections = await getAllCollectionsInRoom(roomName)
-    const [database, client] = await mongoDbClientConnect("mongodb://127.0.0.1:27017/", roomName)
+    const [database, client] = await mongoDbClientConnect("mongodb://" + global.mongoDbAddress + ":27017/", roomName)
     let objs = []
     for (let i = 0; i < objCollections.length; i++) {
         let collection = database.collection(objCollections[i])
@@ -80,7 +80,7 @@ async function getAllObjectsInRoomAndInventory(roomName, userId) {
      */
     // Returns a list of all objects in a room
     let objCollections = await getAllCollectionsInRoom(roomName)
-    const [database, client] = await mongoDbClientConnect("mongodb://127.0.0.1:27017/", roomName)
+    const [database, client] = await mongoDbClientConnect("mongodb://" + global.mongoDbAddress + ":27017/", roomName)
     let objs = []
     for (let i = 0; i < objCollections.length; i++) {
         let collection = database.collection(objCollections[i])
@@ -91,7 +91,7 @@ async function getAllObjectsInRoomAndInventory(roomName, userId) {
 
     const inventoryName = "userInventory_" + userId
     let invObjCollections = await getAllCollectionsInRoom(inventoryName)
-    const [invDatabase, invClient] = await mongoDbClientConnect("mongodb://127.0.0.1:27017/", inventoryName)
+    const [invDatabase, invClient] = await mongoDbClientConnect("mongodb://" + global.mongoDbAddress + ":27017/", inventoryName)
     for (let i = 0; i < invObjCollections.length; i++) {
         let collection = invDatabase.collection(invObjCollections[i])
         let x = await collection.find().toArray()
@@ -111,7 +111,7 @@ async function getAllObjectsInInventory(userId) {
     let objs = []
     const inventoryName = "userInventory_" + userId
     let invObjCollections = await getAllCollectionsInRoom(inventoryName)
-    const [invDatabase, invClient] = await mongoDbClientConnect("mongodb://127.0.0.1:27017/", inventoryName)
+    const [invDatabase, invClient] = await mongoDbClientConnect("mongodb://" + global.mongoDbAddress + ":27017/", inventoryName)
     for (let i = 0; i < invObjCollections.length; i++) {
         let collection = invDatabase.collection(invObjCollections[i])
         let x = await collection.find().toArray()
@@ -127,7 +127,7 @@ async function getAllPeopleInRoom(roomName) {
      * @param {String} roomName - name of room to query
      * @return {[Object]} Array of user objs inside of the room
      */
-    const [database, client] = await mongoDbClientConnect("mongodb://127.0.0.1:27017/", roomName)
+    const [database, client] = await mongoDbClientConnect("mongodb://" + global.mongoDbAddress + ":27017/", roomName)
     const people = await database.collection('people').find().toArray()
     await client.close()
     return people
@@ -149,7 +149,7 @@ async function getObjByDbIdAndRoom(objDbId, roomName) {
      */
 
     let objCollections = await getAllCollectionsInRoom(roomName)
-    const [database, client] = await mongoDbClientConnect("mongodb://127.0.0.1:27017/", roomName)
+    const [database, client] = await mongoDbClientConnect("mongodb://" + global.mongoDbAddress + ":27017/", roomName)
 
     for (i = 0; i < objCollections.length; i++) {
         out = await database.collection(objCollections[i]).findOne({ _id: ObjectID(objDbId) })
@@ -163,7 +163,7 @@ async function getObjByDbIdAndRoom(objDbId, roomName) {
 }
 
 async function getRoomObjByRoomName(roomName) {
-    const [database, client] = await mongoDbClientConnect("mongodb://127.0.0.1:27017/", roomName)
+    const [database, client] = await mongoDbClientConnect("mongodb://" + global.mongoDbAddress + ":27017/", roomName)
     let roomObj = await database.collection('room').findOne()
     await client.close()
     return roomObj

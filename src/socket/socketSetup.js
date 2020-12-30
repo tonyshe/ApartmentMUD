@@ -53,7 +53,6 @@ async function setupSocket() {
         });
 
         await socket.on('userquery', async (queryInfo) => {
-            console.log('triggered!')
             const userObjList = await getObjs.getAllPeopleInRoom("mud_bedroom")
             const userNameList = userObjList.map((obj) => {return obj.names[0]})
             if (userNameList.includes(queryInfo[0].toLowerCase())) {

@@ -51,14 +51,14 @@ async function createPerson(objInfo, personSchema, userIdMapSchema) {
         describe: describe
     }
 
-    const url = "mongodb://127.0.0.1:27017/" + roomName;
+    const url = "mongodb://" + global.mongoDbAddress + ":27017/" + roomName;
     await mongoose.connect(url, { useNewUrlParser: true, useUnifiedTopology: true })
 
     console.log("Making person: " + names)
     let obj = await person.create({ ...objProps })
     await mongoose.connection.close()
 
-    const personDbUrl = "mongodb://127.0.0.1:27017/userIdMap";
+    const personDbUrl = "mongodb://" + global.mongoDbAddress + ":27017/userIdMap";
     await mongoose.connect(personDbUrl, { useNewUrlParser: true, useUnifiedTopology: true })
 
     userIdProps = {

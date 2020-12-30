@@ -1,4 +1,4 @@
-const getObjs = require("../objectFunctions/GetObjectFunctions")
+const getObjs = require("../objectFunctions/getObjectFunctions")
 const setObjs = require("../objectFunctions/setObjectFunctions")
 const getUsers = require("../userFunctions/getUserFunctions")
 const textHelpers = require("../helperFunctions/textHelpers")

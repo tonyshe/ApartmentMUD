@@ -54,7 +54,7 @@ async function createContainerObject(objInfo) {
     }
 
     console.log("  -Making container: " + names)
-    const url = "mongodb://127.0.0.1:27017/" + roomName;
+    const url = "mongodb://" + global.mongoDbAddress + ":27017/" + roomName;
     await mongoose.connect(url, { useNewUrlParser: true, useUnifiedTopology: true })
     let obj = await containerObj.create({ ...objProps })
     await mongoose.connection.close()

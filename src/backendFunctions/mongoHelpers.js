@@ -8,11 +8,11 @@ async function mongoDbClientConnect(url, roomName) {
      * database object.
      * Todo: maybe add a timeout so client automatically closes after a few seconds
      * @param {String} url - Url of the mongo db instance with port
-     *     Example: "mongodb://127.0.0.1:27017/"
+     *     Example: "mongodb://" + global.mongoDbAddress + ":27017/"
      * @param {String} roomName - name of the room to connect to
      * @return {[Object, Object]} - MongoClint.db object and client object
      */
-    url = "mongodb://127.0.0.1:27017/"  + roomName;
+    url = "mongodb://" + global.mongoDbAddress + ":27017/"  + roomName;
     const client = new MongoClient(url, {useNewUrlParser: true, useUnifiedTopology: true})
     await client.connect()
     const database = client.db(roomName)

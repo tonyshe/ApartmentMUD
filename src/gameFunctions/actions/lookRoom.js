@@ -1,4 +1,4 @@
-const getObjs = require("../objectFunctions/GetObjectFunctions")
+const getObjs = require("../objectFunctions/getObjectFunctions")
 const {lookFunctions} = require("../describeFunctions/describeFunctions")
 
 async function lookRoom(roomName, userId) {

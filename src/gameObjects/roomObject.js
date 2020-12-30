@@ -43,7 +43,7 @@ async function createRoomObject(objInfo) {
         look: look,
         roomVars: roomVars
     }
-    const url = "mongodb://127.0.0.1:27017/"  + roomName;
+    const url = "mongodb://" + global.mongoDbAddress + ":27017/"  + roomName;
     await mongoose.connect(url, {useNewUrlParser: true, useUnifiedTopology: true})
     
     await roomObj.findOne({roomName: roomName}).then((result) => {
