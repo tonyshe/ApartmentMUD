@@ -347,7 +347,7 @@ async function apartmentScenario() {
     const coffeeTableId = await createContainerObject({
         names: ["coffee table", "table"],
         roomName: "mud_livingroom",
-        description: "A cheap coffee table with a broken leg.",
+        description: "A cheap coffee table with a broken leg."
     })
     const donutID = await createBaseObject({
         names: ["doughnut", "donut"],
