@@ -1,6 +1,6 @@
 # ApartmentMUD
 
-h2. UPDATE: testing server is LIVE! Checkout the latest functionality here: http://159.65.79.105:3000/
+<b>UPDATE: testing server is LIVE! Checkout the latest functionality here: http://159.65.79.105:3000/</b>
 
 Successor to AdventureRoom, this will add multiplayer support by moving all game data to MongoDB, and provide client access via socket.io
 
