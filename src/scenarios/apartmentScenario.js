@@ -187,6 +187,7 @@ async function apartmentScenario() {
         roomName: "mud_ianroom",
         names: ["soccer ball", "ball", "futbol"],
         description: "A blue soccer ball",
+        takeable: true
     })
     const ianTableId = await createContainerObject({
         names: ["table", "wooden table", "desk", "wooden desk"],
@@ -198,6 +199,7 @@ async function apartmentScenario() {
         roomName: "mud_ianroom",
         names: ["taco", "food"],
         description: "A Doritos Locos taco from Taco Bell. There's a bite taken out of it.",
+        takeable: true
     })
     await putObjectAdmin(soccerBallId, ianBedId, "mud_ianroom")
     await putObjectAdmin(tacoId, ianTableId, "mud_ianroom")
@@ -225,7 +227,7 @@ async function apartmentScenario() {
         roomName: "mud_ianroom",
         description: "A door to the hallway.",
     }, {
-        names: ["door", "Ian's room", "Ian door", "Ian's door", "Ian", 'bedroom', 'bedroom door', 'room'],
+        names: ["door", "Ian's room", "Ian door", "Ians door","Ians room",, "Ian's door", "Ian", 'bedroom', 'bedroom door', 'room'],
         roomName: "mud_hallway",
         description: "A door to Ian's room.",
     })
@@ -235,7 +237,7 @@ async function apartmentScenario() {
         names: ['hallway', 'corridor', 'hall'],
         roomName: "mud_hallway",
         description: "A small hallway connecting the different parts of the upstairs. \
-        There are doors to <b>Matt</b>, <b>Tony</b>, and <b>Ian's rooms</b>, as well as a door to the <b>bathroom</b>. \
+        There are doors to <b>Matt</b>'s, <b>Tony</b>'s, and <b>Ian</b>'s rooms, as well as a door to the <b>bathroom</b>. \
         In the middle of the hallway are <b>stairs</b> that lead down to the living room."
     })
     await createContainerObject({
@@ -347,7 +349,7 @@ async function apartmentScenario() {
     const coffeeTableId = await createContainerObject({
         names: ["coffee table", "table"],
         roomName: "mud_livingroom",
-        description: "A cheap coffee table with a broken leg."
+        description: "A cheap coffee table with a broken leg.",
     })
     const donutID = await createBaseObject({
         names: ["doughnut", "donut"],
@@ -355,6 +357,13 @@ async function apartmentScenario() {
         description: "A chocolate glazed doughnut.",
         takeable: true
     })
+    const donutID = await createBaseObject({
+        names: ["doughnut", "donut"],
+        roomName: "mud_livingroom",
+        description: "A chocolate glazed doughnut.",
+        takeable: true
+    })
+    await putObjectAdmin(donutID, coffeeTableId, "mud_livingroom")
     await createContainerObject({
         names: ["couch", "sofa"],
         roomName: "mud_livingroom",
