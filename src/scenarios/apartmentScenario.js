@@ -343,13 +343,11 @@ async function apartmentScenario() {
         names: ["coffee table", "table"],
         roomName: "mud_livingroom",
         description: "A cheap coffee table with a broken leg.",
-        important: true
     })
     await createContainerObject({
         names: ["couch", "sofa"],
         roomName: "mud_livingroom",
         description: "A nice comfy couch.",
-        important: true
     })
     await createBaseObject({
         roomName: "mud_livingroom",
@@ -381,7 +379,7 @@ async function apartmentScenario() {
     await createRoomObject({
         names: ['kitchen', 'room'],
         roomName: "mud_kitchen",
-        description: 'Fancy black marble countertop. It has all your essential kitchen appliances: oven, stove, fridge, microwave, sink. In the middle of the kitchen is a dining table. \
+        description: 'Fancy black marble countertop. It has all your essential kitchen appliances: oven, stove, fridge, microwave, sink. In the middle of the kitchen there is a dining table. \
         There is a <b>door</b> leading out to the backyard. \
         On the other side of the is the downstairs is the <b>living room</b>.'
     })
