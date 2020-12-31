@@ -90,8 +90,6 @@ async function setupSocket() {
             const userNameList = userObjList.map((obj) => {return obj.names[0]})
             if (userNameList.includes(queryInfo[0].toLowerCase())) {
                 await io.emit('query_'+queryInfo[1], 'duplicate')
-                console.log('query_'+queryInfo[1])
-                console.log(userNameList)
             } else {
                 await io.emit('query_'+queryInfo[1], 'no_duplicate')
             }

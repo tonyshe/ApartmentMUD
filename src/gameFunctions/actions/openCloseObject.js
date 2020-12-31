@@ -58,9 +58,6 @@ async function openContainer(roomName, userId, comArr) {
             if (wordList[1] != '' && containerObj.hidesContents) {
                 outString += ' It reveals ' + wordList[0] + '.';
             };
-
-            console.log(userIdList)
-
             return {
                 [outString]: [userId],
                 [userName + " opens the " + containerObjName + "."]: userIdList

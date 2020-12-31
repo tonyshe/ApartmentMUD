@@ -167,7 +167,7 @@ async function apartmentScenario() {
 
     // Ian's Room
     await createRoomObject({
-        names: ["room", "Ian's room", "Ian", 'bedroom',],
+        names: ["room", "Ian's room", "Ian", 'bedroom'],
         roomName: "mud_ianroom",
         roomTitle: "Ian's room",
         description: "A simple four-sided bedroom. There is a door leading out to the <b>hallway</b>."
@@ -227,7 +227,7 @@ async function apartmentScenario() {
         roomName: "mud_ianroom",
         description: "A door to the hallway.",
     }, {
-        names: ["door", "Ian's room", "Ian door", "Ians door","Ians room",, "Ian's door", "Ian", 'bedroom', 'bedroom door', 'room'],
+        names: ["door", "Ian's room", "Ian door", "Ians door","Ians room", "Ian's door", "Ian", 'bedroom', 'bedroom door', 'room'],
         roomName: "mud_hallway",
         description: "A door to Ian's room.",
     })
@@ -240,11 +240,13 @@ async function apartmentScenario() {
         There are doors to <b>Matt</b>'s, <b>Tony</b>'s, and <b>Ian</b>'s rooms, as well as a door to the <b>bathroom</b>. \
         In the middle of the hallway are <b>stairs</b> that lead down to the living room."
     })
+
     await createContainerObject({
         names: ["carpet", "floor", "shag carpet", "ground"],
         roomName: "mud_hallway",
         description: "Off-white fuzzy carpet. Feels good on your toes."
     })
+
     await createBaseObject({
         roomName: "mud_hallway",
         names: ["ceiling", "up"],
