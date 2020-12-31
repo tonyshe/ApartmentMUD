@@ -10,8 +10,8 @@ const getUsers = require('../gameFunctions/userFunctions/getUserFunctions')
 const setObjs = require('../gameFunctions/objectFunctions/setObjectFunctions')
 const moveObjs = require('../gameFunctions/objectFunctions/moveObjectFunctions')
 const textHelpers = require("../gameFunctions/helperFunctions/textHelpers")
-const {putObjectAdmin} = require("../gameFunctions/actions/putObject")
 const {lookFunctions} = require("../gameFunctions/describeFunctions/describeFunctions")
+const {helpResponse} = require("../gameFunctions/actions/showHelp")
 
 async function setupSocket() {
 
@@ -21,10 +21,11 @@ async function setupSocket() {
             const userName = userInfo[1].toLowerCase()
             console.log('User logon and Id created: ' + userId)
             socket.userId = userId
-            await socket.join('lobby')
+            
             await socket.join(userId)
             socket.room = "lobby"
-            io.emit('chat message', textHelpers.capitalizeFirstLetter(userName) + " has connected." )
+            io.to('lobby').emit('chat message', textHelpers.capitalizeFirstLetter(userName) + " has connected." )
+            await socket.join('lobby')
             await createPerson({
                 roomName: "mud_bedroom",
                 names: [userName, "person"],
@@ -35,7 +36,8 @@ async function setupSocket() {
             const roomObj = await getObjs.getRoomObjByRoomName("mud_bedroom")
             const roomDescribe = await lookFunctions[roomObj.look](userId, roomObj)
             const message = "<br><b>" + textHelpers.capitalizeFirstLetter(roomObj.roomTitle) + "</b><br>" + roomDescribe
-            io.emit('chat message_' + userId, message)
+            io.to(userId).emit('chat message', helpResponse)
+            io.to(userId).emit('chat message', message)
         });
 
         await socket.on('chat message', async (msg) => {
@@ -53,7 +55,7 @@ async function setupSocket() {
             if (socket.userId) {
                 console.log('user disconnected: ' + socket.userId);
                 const userName = await getUsers.getUserNameByUserId(socket.userId)
-                await io.emit('chat message', textHelpers.capitalizeFirstLetter(userName) + " has disconnected." )
+                await io.to('lobby').emit('chat message', textHelpers.capitalizeFirstLetter(userName) + " has disconnected." )
                 
                 // move all items in user inventory to ground
                 const userInv = await getObjs.getAllObjectsInInventory(socket.userId)
@@ -80,6 +82,7 @@ async function setupSocket() {
 
             // remove socket from the socket room
             await socket.leave(socket.room);
+            await socket.disconnect()
         });
 
         await socket.on('userquery', async (queryInfo) => {
