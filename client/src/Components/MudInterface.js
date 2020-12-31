@@ -1,5 +1,5 @@
 import socketIOClient from "socket.io-client"
-import React, { useState, useEffect } from 'react'
+import React, { useEffect } from 'react'
 
 
 function MudInterface({ username, userId }) {
@@ -19,8 +19,11 @@ function MudInterface({ username, userId }) {
             // determine if the user was at the bottom of the page before a new message is given
             let atBottom = false
             // add new message
+            if (window.pageYOffset + window.innerHeight > window.document.body.offsetHeight - 50 ) { atBottom = true}
             newMessage(msg);
-            window.scrollTo({ behavior: "smooth", top: window.height })
+            if (atBottom) {
+                window.scrollTo({ behavior: "smooth", top: window.document.body.offsetHeight })
+            }
         });
     })
 
@@ -44,7 +47,7 @@ function MudInterface({ username, userId }) {
         e.target.reset()
         socket.emit('chat message', [message, userId])
         newMessage(">> " + message, true);
-        window.scrollTo({ behavior: "smooth", top: window.height })
+        window.scrollTo({ behavior: "smooth", top: window.document.body.offsetHeight })
     }
 
     function newMessage(msg, grey = false) {
