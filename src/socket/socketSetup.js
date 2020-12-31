@@ -1,17 +1,16 @@
 const app = require('express')();
 const cors = require('cors')
-const express = require('express');
-const path = require('path')
 const http = require('http').createServer(app);
 const options = { cors: true }
 const io = require('socket.io')(http, options);
-const { create } = require('domain');
 const { command } = require("../gameFunctions/commandFunctions/command")
 const { createPerson, deletePerson } = require("../gameObjects/personObject")
-const { makeRandomWord } = require("../gameFunctions/helperFunctions/gameHelpers")
-const fetch = require("node-fetch")
 const getObjs = require('../gameFunctions/objectFunctions/getObjectFunctions')
+const getUsers = require('../gameFunctions/userFunctions/getUserFunctions')
+const setObjs = require('../gameFunctions/objectFunctions/setObjectFunctions')
+const moveObjs = require('../gameFunctions/objectFunctions/moveObjectFunctions')
 const textHelpers = require("../gameFunctions/helperFunctions/textHelpers")
+const {putObjectAdmin} = require("../gameFunctions/actions/putObject")
 
 async function setupSocket() {
 
@@ -23,6 +22,7 @@ async function setupSocket() {
             socket.userId = userId
             await socket.join('lobby')
             socket.room = "lobby"
+            io.emit('chat message', textHelpers.capitalizeFirstLetter(userName) + " has connected." )
             await createPerson({
                 roomName: "mud_bedroom",
                 names: [userName, "person"],
@@ -46,9 +46,32 @@ async function setupSocket() {
         await socket.on('disconnect', async () => {
             if (socket.userId) {
                 console.log('user disconnected: ' + socket.userId);
+                const userName = await getUsers.getUserNameByUserId(socket.userId)
+                await io.emit('chat message', textHelpers.capitalizeFirstLetter(userName) + " has disconnected." )
+                
+                // move all items in user inventory to ground
+                const userInv = await getObjs.getAllObjectsInInventory(socket.userId)
+                const roomName = await getUsers.getUserRoomByUserId(socket.userId)
+                const floorObjList = await getObjs.getAllObjsByNameInRoom("floor", roomName)
+                let floorObj = floorObjList[0]
+                for (let i=0;i < userInv.length; i++) {
+                    // Add items to floor container
+                    await floorObj.contains.push(userInv[i])
+                    await setObjs.setObjectPropertyByDbIdAndRoomName(floorObj._id, roomName, 'contains', floorObj.contains)  
+                    // set items as visible
+                    await setObjs.setObjectPropertyByDbIdAndRoomName(userInv[i]._id, "userInventory_" + socket.userId, 'visible', true)
+                    // move items from user inventory to room 
+                    await moveObjs.moveObjectToAnotherDb(userInv[i]._id, "userInventory_" + socket.userId, roomName)
+                    // add container obj id to floors "inside" property
+                    await setObjs.setObjectPropertyByDbIdAndRoomName(userInv[i]._id, roomName, 'inside', String(floorObj._id))
+                }
+                
+                // Delete person
                 await deletePerson(socket.userId)
                 socket.userId = ""
             }
+
+            // remove socket from the socket room
             await socket.leave(socket.room);
         });
 

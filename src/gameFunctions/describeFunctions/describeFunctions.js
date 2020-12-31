@@ -50,6 +50,15 @@ const lookFunctions = {
                 outString += ' ' + textHelpers.capitalizeFirstLetter(peopleWordList[0] + ' ' + peopleWordList[1] + ' ' + ' also in the ' + roomObj.names[0] + '.');
             };
         }
+
+        const floor = await getObjs.getAllObjsByNameInRoom("floor", roomObj.roomName)
+        const floorObjs = floor[0].contains
+        console.log(floor)
+        if (floorObjs.length > 0) {
+            const floorObjNames = floorObjs.map((obj) => {return obj.names[0]})
+            const floorWordList = textHelpers.objLister(floorObjNames)
+            outString += ' ' +  textHelpers.capitalizeFirstLetter(floorWordList[0] + ' ' + floorWordList[1] + ' on the ' + floor[0].names[0] + '.')
+        }
         return outString
     }
 }

@@ -74,6 +74,8 @@ async function createPerson(objInfo, personSchema, userIdMapSchema) {
     return String(obj._id)
 }
 
+
+
 async function deletePerson(userId) {
     // Takes in a user id (not Db id!!!!) and deletes user
     const userDbId = await getUsers.getUserDbIdByUserId(userId)
