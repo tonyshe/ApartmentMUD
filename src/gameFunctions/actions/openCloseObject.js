@@ -59,9 +59,11 @@ async function openContainer(roomName, userId, comArr) {
                 outString += ' It reveals ' + wordList[0] + '.';
             };
 
+            console.log(userIdList)
+
             return {
                 [outString]: [userId],
-                [userName + " opens the " + containerObjName + "."]: [userIdList]
+                [userName + " opens the " + containerObjName + "."]: userIdList
             }
         }
     }
@@ -112,12 +114,11 @@ async function closeContainer(roomName, userId, comArr) {
 
             return {
                 ["You close the " + containerObjName + "."]: [userId],
-                [userName + " closes the " + containerObjName + "."]: [userIdList]
+                [userName + " closes the " + containerObjName + "."]: userIdList
             }
         }
     }
 }
-
 
 module.exports = {
     openContainer,

@@ -22,6 +22,7 @@ async function setupSocket() {
             console.log('User logon and Id created: ' + userId)
             socket.userId = userId
             await socket.join('lobby')
+            await socket.join(userId)
             socket.room = "lobby"
             io.emit('chat message', textHelpers.capitalizeFirstLetter(userName) + " has connected." )
             await createPerson({
@@ -43,7 +44,7 @@ async function setupSocket() {
             let returnMsgList = Object.entries(returnMsg)
             for (let i = 0; i < returnMsgList.length; i++) {
                 for (let j = 0; j < returnMsgList[i][1].length; j++) {
-                    await io.emit('chat message_' + returnMsgList[i][1][j], returnMsgList[i][0])
+                    await io.to(returnMsgList[i][1][j]).emit('chat message', returnMsgList[i][0])
                 }
             };
         });
@@ -73,6 +74,7 @@ async function setupSocket() {
                 
                 // Delete person
                 await deletePerson(socket.userId)
+                await socket.leave(socket.userId)
                 socket.userId = ""
             }
 

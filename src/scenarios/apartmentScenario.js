@@ -351,11 +351,6 @@ async function apartmentScenario() {
         description: "A nice comfy couch.",
         important: true
     })
-    await createContainerObject({
-        names: ["floor", "hardwood", "ground"],
-        roomName: "mud_livingroom",
-        description: "Dark hardwood floors."
-    })
     await createBaseObject({
         roomName: "mud_livingroom",
         names: ["TV", "television"],
