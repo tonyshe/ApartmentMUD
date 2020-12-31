@@ -15,19 +15,6 @@ function MudInterface({ username, userId }) {
     })
 
     useEffect(() => {
-        socket.on('chat message_' + userId, function (msg) {
-            // determine if the user was at the bottom of the page before a new message is given
-            let atBottom = false
-            // add new message
-            if (window.pageYOffset + window.innerHeight > window.document.body.offsetHeight - 50 ) { atBottom = true}
-            newMessage(msg);
-            if (atBottom) {
-                window.scrollTo({ behavior: "smooth", top: window.document.body.offsetHeight })
-            }
-        });
-    })
-
-    useEffect(() => {
         socket.on("disconnect", (e) => {
             newMessage("<p style='background-color:salmon;'><b>You have been disconnected. Please refresh.</b></p>");
             document.getElementById('command').remove()
