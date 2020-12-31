@@ -105,6 +105,9 @@ async function putObjectAdmin(putObjId, containerObjId, roomName) {
      * @param {String} containerObjId - id of the container object to put in/on
      * @param {String} roomName - name of the room that both objs are in
      */
+    console.log(putObjId)
+    console.log(containerObjId)
+    console.log(roomName)
     let putObj = await getObjs.getObjByDbIdAndRoom(putObjId, roomName)
     let containerObj = await getObjs.getObjByDbIdAndRoom(containerObjId, roomName)
     putObj = putObj[0]

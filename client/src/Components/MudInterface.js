@@ -37,7 +37,14 @@ function MudInterface({ username, userId }) {
 
     useEffect(() => {
         socket.on('chat message', function (msg) {
+            // determine if the user was at the bottom of the page before a new message is given
+            let atBottom = false
+            // add new message
+            if (window.pageYOffset + window.innerHeight > window.document.body.offsetHeight - 50 ) { atBottom = true}
             newMessage(msg);
+            if (atBottom) {
+                window.scrollTo({ behavior: "smooth", top: window.document.body.offsetHeight })
+            }
         });
     })
 
@@ -76,7 +83,6 @@ function MudInterface({ username, userId }) {
                         <br />
                         Enter a command or type "help" for a list of commands.
                     </p>
-                    <br />
                     <hr />
                 </div>
             </div>
