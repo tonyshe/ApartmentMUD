@@ -8,7 +8,8 @@ const getUsers = require("../userFunctions/getUserFunctions")
 const { lookRoom } = require('../actions/lookRoom')
 const { inventory } = require('../actions/inventory')
 const { openContainer, closeContainer } = require('../actions/openCloseObject')
-const { showHelp } = require("../actions/showHelp")
+const {showHelp} = require("../actions/showHelp")
+
 
 async function command(userCom, userId) {
     // processes the user command

@@ -66,7 +66,7 @@ function MudInterface({ username, userId }) {
             <div id="messageBox">
                 <div className="message">
                     <p>
-                        <b>Welcome to the ApartmentMUD!</b>
+                        <b>Welcome to the interactive text adventure house!</b>
                         <br />
                         Enter a command or type "help" for a list of commands.
                     </p>
