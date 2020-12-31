@@ -3,6 +3,7 @@ mongoose = require("mongoose")
 const roomObjectSchema = new mongoose.Schema({
     names: {type: [String]},
     roomName: {type: String},
+    roomTitle: {type: String},
     important: {type: Boolean},
     takeable: {type: Boolean},
     visible: {type: Boolean},
@@ -21,6 +22,7 @@ const roomObj = mongoose.model(collectionName, roomObjectSchema);
 async function createRoomObject(objInfo) {
     const {
         roomName = 'unnamedRooms',
+        roomTitle = '',
         names = ['noname'],
         important = false,
         takeable = false,
@@ -35,6 +37,7 @@ async function createRoomObject(objInfo) {
     objProps = {
         names: names,
         roomName: roomName,
+        roomTitle: roomTitle === '' ? names[0] : roomTitle,
         important: important,
         takeable: takeable,
         visible: visible,

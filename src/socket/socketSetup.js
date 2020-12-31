@@ -11,6 +11,7 @@ const setObjs = require('../gameFunctions/objectFunctions/setObjectFunctions')
 const moveObjs = require('../gameFunctions/objectFunctions/moveObjectFunctions')
 const textHelpers = require("../gameFunctions/helperFunctions/textHelpers")
 const {putObjectAdmin} = require("../gameFunctions/actions/putObject")
+const {lookFunctions} = require("../gameFunctions/describeFunctions/describeFunctions")
 
 async function setupSocket() {
 
@@ -30,6 +31,10 @@ async function setupSocket() {
                 description: "It's your friend " + textHelpers.capitalizeFirstLetter(userName) + ".",
                 userId: userId
             })
+            const roomObj = await getObjs.getRoomObjByRoomName("mud_bedroom")
+            const roomDescribe = await lookFunctions[roomObj.look](userId, roomObj)
+            const message = "<br><b>" + textHelpers.capitalizeFirstLetter(roomObj.roomTitle) + "</b><br>" + roomDescribe
+            io.emit('chat message_' + userId, message)
         });
 
         await socket.on('chat message', async (msg) => {

@@ -11,8 +11,6 @@ const { sleep } = require('./src/gameFunctions/helperFunctions/scriptHelpers')
 
 global.mongoDbAddress = process.env.MONGO_ADDRESS || "127.0.0.1"
 
-console.log(mongoDbAddress)
-
 async function dropAllRoomDbs(roomDbs) {
 	const baseUrl = "mongodb://" + global.mongoDbAddress + ":27017/"
 	for (let i = 0; i < roomDbs.length; i++) {
