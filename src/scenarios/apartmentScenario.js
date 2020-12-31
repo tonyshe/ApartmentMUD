@@ -357,12 +357,6 @@ async function apartmentScenario() {
         description: "A chocolate glazed doughnut.",
         takeable: true
     })
-    const donutID = await createBaseObject({
-        names: ["doughnut", "donut"],
-        roomName: "mud_livingroom",
-        description: "A chocolate glazed doughnut.",
-        takeable: true
-    })
     await putObjectAdmin(donutID, coffeeTableId, "mud_livingroom")
     await createContainerObject({
         names: ["couch", "sofa"],
