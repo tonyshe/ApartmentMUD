@@ -2,6 +2,8 @@ const { get } = require("mongoose")
 const getObjs = require("../objectFunctions/getObjectFunctions")
 const moveObjs = require("../objectFunctions/moveObjectFunctions")
 const getUsers = require("../userFunctions/getUserFunctions")
+const textHelpers = require("../helperFunctions/textHelpers")
+const {lookFunctions} = require("../describeFunctions/describeFunctions")
 
 async function goDoor(roomName, userId, comArr) {
     /**
@@ -20,7 +22,9 @@ async function goDoor(roomName, userId, comArr) {
     const doorName = comArr.slice(1).join(" ")
 
     let doors = await getObjs.getAllDoorsInRoom(roomName)
-    doors = doors.filter((door) => { return door.names.includes(doorName) })
+    doors = doors.filter((door) => {
+        const doorNamesLowercase = door.names.map((doorname) => {return doorname.toLowerCase()}) 
+        return doorNamesLowercase.includes(doorName.toLowerCase()) })
     if (doors.length > 1) {
         // more than one door by that name
         return { ['There are more than one thing by the name ' + '"' + doorName + '." Please be more specific as to which one you mean.']: [userId] }
@@ -45,9 +49,19 @@ async function goDoor(roomName, userId, comArr) {
             userIdList = userIdList.filter((id) => { return id != userId })
             const userName = await getUsers.getUserNameByUserId(userId)
 
+            // get list of userids of everyone in destination room 
+            let userIdListDestination = await getUsers.getAllUserIdsInRoom(toRoomName)
+            userIdListDestination = userIdListDestination.filter((id) => { return id != userId })
+            
+            const newRoomObj = await getObjs.getRoomObjByRoomName(toRoomName)
+            const roomDescribe = await lookFunctions[newRoomObj.look](userId, newRoomObj)
+            const roomTitle = textHelpers.capitalizeFirstLetter(newRoomObj.roomTitle)
+
             return {
-                ["You go " + door.preposition + " the " + door.names[0] + " to the " + door.names[1] + "."]: [userId],
-                [userName + " goes " + door.preposition + " the " + door.names[0] + " to the " + door.names[1] + "."]: userIdList
+                ["You go " + door.preposition + " the " + door.names[0] + " to the " + door.names[1] + ". \
+                <br><br><b>" + roomTitle + "</b><br>" + roomDescribe]: [userId],
+                [textHelpers.capitalizeFirstLetter(userName + " goes " + door.preposition + " the " + door.names[0] + " to the " + door.names[1] + ".")]: userIdList,
+                [textHelpers.capitalizeFirstLetter(userName + " comes " + door.preposition + " the " + door.names[0] + " to the " + door.names[1] + '.')]: userIdListDestination,
             }
         }
     }

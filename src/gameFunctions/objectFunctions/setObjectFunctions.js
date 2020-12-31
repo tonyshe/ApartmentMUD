@@ -11,16 +11,8 @@ async function setObjectPropertyByDbIdAndRoomName(objDbId, roomName, property, v
      * @param {Any} - value toi set
      * @return {Object} - Object that matches the DB id supplied
      */
-    console.log("setObjectPropertyByDbIdAndRoomName ARGS:")
-    console.log(objDbId)
-    console.log(roomName)
-    console.log(property)
-    console.log(value)
-    console.log("---")
-    
     let [obj,collectionName] = await getObjs.getObjByDbIdAndRoom(objDbId, roomName)
     const [database,client] = await mongoDbClientConnect("mongodb://" + global.mongoDbAddress + ":27017/", roomName)
-    console.log(collectionName)
     await database.collection(collectionName).updateOne(obj, {$set: {...obj, [property]: value}})
     await client.close()
     return obj

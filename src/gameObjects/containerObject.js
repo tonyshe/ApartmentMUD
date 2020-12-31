@@ -4,6 +4,7 @@ const { baseObjectSchemaStructure } = require("./baseObject")
 
 // Additional container object schema to add onto base object schema 
 let containerObjectSchemaAddons = {
+    hidesContents: {type: Boolean},
     preposition: { type: String },
     contains: { type: [Object] },
     objsAllowed: { type: [String] },
@@ -29,6 +30,7 @@ async function createContainerObject(objInfo) {
         description = "It's either indescribable or I forgot to write a description for this...",
         describe = 'containerDescribe',
         visible = true,
+        hidesContents = true,
         preposition = "on", // preferred preposition. Try to be consistent with the command parsing.
         contains = [], // Collection of objects inside container. You can't set this manually
         objsAllowed = [], // Allows any object if not set. Otherwise, only accepts objects in this list.
@@ -45,6 +47,7 @@ async function createContainerObject(objInfo) {
         description: description,
         describe: describe,
         visible: visible,
+        hidesContents: hidesContents,
         preposition: preposition,
         contains: [],
         objsAllowed: objsAllowed,

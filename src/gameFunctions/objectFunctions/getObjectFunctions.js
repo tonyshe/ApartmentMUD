@@ -49,25 +49,31 @@ async function getAllObjectsInRoom(roomName) {
 
 async function getAllObjsByNameInRoom(objName, roomName) {
     const objs = await getAllObjectsInRoom(roomName)
-    const foundObjs = objs.filter((obj) => {return obj.names.includes(objName)})
+    const foundObjs = objs.filter((obj) => {
+        const lowercaseNames = obj.names.map((objname) => { return objname.toLowerCase() })
+        return lowercaseNames.includes(objName.toLowerCase())
+    })
     return foundObjs
 }
 
 async function getAllVisibleObjsInRoom(roomName) {
     const objs = await getAllObjectsInRoom(roomName)
-    const visibleObjs = objs.filter((obj) => {return obj.visible})
+    const visibleObjs = objs.filter((obj) => { return obj.visible })
     return visibleObjs
 }
 
 async function getAllVisibleObjsInRoomByName(objName, roomName) {
     const objs = await getAllObjsByNameInRoom(objName, roomName)
-    const visibleObjs = objs.filter((obj) => {return obj.visible})
+    const visibleObjs = objs.filter((obj) => { return obj.visible })
     return visibleObjs
 }
 
 async function getAllObjsByNameInInventory(objName, userId) {
     const objs = await getAllObjectsInInventory(userId)
-    const foundObjs = objs.filter((obj) => {return obj.names.includes(objName)})
+    const foundObjs = objs.filter((obj) => {
+        const lowercaseNames = obj.names.map((objname) => { return objname.toLowerCase() })
+        return lowercaseNames.includes(objName.toLowerCase())
+    })
     return foundObjs
 }
 
@@ -136,7 +142,7 @@ async function getAllPeopleInRoom(roomName) {
 async function getAllImportantObjectsInRoom(roomName) {
     // returns a list of all important objects in a room
     let visibleObjs = await getAllVisibleObjsInRoom(roomName)
-    const importObjs = visibleObjs.filter((obj) => {return obj.important})
+    const importObjs = visibleObjs.filter((obj) => { return obj.important })
     return importObjs
 }
 

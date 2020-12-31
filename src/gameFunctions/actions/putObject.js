@@ -15,12 +15,12 @@ async function putObject(roomName, userId, comArr) {
 
     let putObj = []
     let userCom = ""
-    
+
     if (comArr.length === 1) {
         return { ["Please specify something to " + comArr[0] + "."]: [userId] }
     } else {
         userCom = comArr.join(" ")
-        putObj = userCom.match(/(?:put|set|place) (.*?) (?:on|in|inside|atop)/); 
+        putObj = userCom.match(/(?:put|set|place) (.*?) (?:on|in|inside|atop)/);
         if (putObj == null) {
             return { ['Please specify where to ' + comArr[0] + ' that.']: [userId] }
         }
@@ -31,7 +31,6 @@ async function putObject(roomName, userId, comArr) {
     const splitPuts = userCom.split(/\s+/);
     const allowedPrepositions = ['in', 'on', 'inside', 'atop']
     const preposition = splitPuts[splitPuts.length - 1]
-    console.log(newContainerString)
     if (newContainerString == null && allowedPrepositions.includes(preposition)) {
         return { ['Please specify where to ' + action + ' that ' + preposition + '.']: [userId] };
     } else if (newContainerString == null && !allowedPrepositions.includes(preposition)) {
@@ -59,18 +58,17 @@ async function putObject(roomName, userId, comArr) {
     let containerObj = containerObjList[0]
     let invObj = invObjList[0]
 
-    // check if container is closed
-    if (!containerObj.open) {
-        return { ["You can't do that. The " + containerObj.names[0] + " is closed."]: [userId] }
-    }
-
     // Check if object is allowed in/on the container
     if (containerObj.objsAllowed.length > 0) {
         const allowedUnionList = containerObj.contains.filter((objName) => { return invObj.names.includes(objName) })
-        console.log(allowedUnionList)
         if (allowedUnionList.length === 0) {
             return { ["That can't go there!"]: [userId] }
         }
+    }
+
+    // check if container is closed
+    if (!containerObj.open && containerObj.hidesContents) {
+        return { ["You can't do that. The " + containerObj.names[0] + " is closed."]: [userId] }
     }
 
     // Add item to container. TODO: logic if the container rejects it.
@@ -105,9 +103,6 @@ async function putObjectAdmin(putObjId, containerObjId, roomName) {
      * @param {String} containerObjId - id of the container object to put in/on
      * @param {String} roomName - name of the room that both objs are in
      */
-    console.log(putObjId)
-    console.log(containerObjId)
-    console.log(roomName)
     let putObj = await getObjs.getObjByDbIdAndRoom(putObjId, roomName)
     let containerObj = await getObjs.getObjByDbIdAndRoom(containerObjId, roomName)
     putObj = putObj[0]
