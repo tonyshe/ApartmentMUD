@@ -26,6 +26,7 @@ services:
             - /node_modules
         depends_on:
             - mongodb
+            - redis
         networks:
             - frontnet
             - backnet
@@ -38,6 +39,15 @@ services:
         ports:
             - "27017:27017"
         command: mongod --noauth
+        networks:
+            - backnet
+    redis:
+        image: redis
+        container_name: redis-container
+        ports:
+            - "6379:6379"
+        expose:
+            - 6379
         networks:
             - backnet
 networks:
