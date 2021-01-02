@@ -82,6 +82,7 @@ const lookFunctions = {
             const floorWordList = textHelpers.objLister(floorObjNames)
             outString += ' ' + textHelpers.capitalizeFirstLetter(floorWordList[0] + ' ' + floorWordList[1] + ' on the ' + floor[0].names[0] + '.')
         }
+        client.close()
         return outString
     }
 }
