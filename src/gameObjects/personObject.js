@@ -76,13 +76,13 @@ async function createPerson(objInfo, personSchema, userIdMapSchema) {
 
 
 
-async function deletePerson(userId) {
+async function deletePerson(client, userId) {
     // Takes in a user id (not Db id!!!!) and deletes user
-    const userDbId = await getUsers.getUserDbIdByUserId(userId)
-    const userRoom = await getUsers.getUserRoomByUserId(userId)
+    const userDbId = await getUsers.getUserDbIdByUserId(client, userId)
+    const userRoom = await getUsers.getUserRoomByUserId(client, userId)
     console.log("DELETING: Userid: " + userId + " DB ID: " + userDbId)
     if (userDbId && userRoom) {
-        await deleteUserInRoomById(userDbId, userRoom)
+        await deleteUserInRoomById(client, userDbId, userRoom)
         return userDbId
     }
 

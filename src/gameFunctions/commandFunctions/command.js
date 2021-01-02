@@ -9,6 +9,7 @@ const { lookRoom } = require('../actions/lookRoom')
 const { inventory } = require('../actions/inventory')
 const { openContainer, closeContainer } = require('../actions/openCloseObject')
 const {showHelp} = require("../actions/showHelp")
+const {mongoDbClient} = require("../../backendFunctions/mongoHelpers")
 
 
 async function command(userCom, userId) {
@@ -16,7 +17,9 @@ async function command(userCom, userId) {
     if (userCom.trim() === "") {
         return false
     } else {
-        let userRoom = await getUsers.getUserRoomByUserId(userId)
+        const client = await mongoDbClient()
+        let userRoom = await getUsers.getUserRoomByUserId(client, userId)
+        await client.close()
         const commandArray = await splitCommands(userCom, userId, userRoom)
         return commandArray
     }

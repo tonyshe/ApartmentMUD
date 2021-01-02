@@ -1,6 +1,7 @@
 mongoose = require("mongoose")
 const { setObjectPropertyByDbIdAndRoomName } = require("../gameFunctions/objectFunctions/setObjectFunctions")
 const { baseObjectSchemaStructure } = require("./baseObject")
+const {mongoDbClient} = require("../backendFunctions/mongoHelpers")
 
 // Additional door object schema to add onto base object schema 
 let doorObjectSchemaAddons = {
@@ -23,6 +24,7 @@ async function createDoorObjectPair(doorA, doorB) {
     /**
      * Creates a pair of doors and links them together via linkedDoor ID and toRoom values
      */
+    const client = await mongoDbClient()
     let doorAObj = await createDoorObject(doorA)
     let doorBObj = await createDoorObject({
         ...doorB,
@@ -31,17 +33,20 @@ async function createDoorObjectPair(doorA, doorB) {
     })
 
     await setObjectPropertyByDbIdAndRoomName(
+        client,
         objDbId = doorAObj._id,
         roomName = doorAObj.roomName,
         property = "linkedDoor",
         value = String(doorBObj._id)
     )
     await setObjectPropertyByDbIdAndRoomName(
+        client,
         objDbId = doorAObj._id,
         roomName = doorAObj.roomName,
         property = "toRoom",
         value = String(doorBObj.roomName)
     )
+    await client.close()
     return [String(doorAObj._id), String(doorBObj._id)]
 }
 

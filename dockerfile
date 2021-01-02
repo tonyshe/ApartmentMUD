@@ -12,5 +12,6 @@ COPY . /ApartmentMUD/
 EXPOSE 4000
 # Set the mongo address env variable to "db"
 ENV MONGO_ADDRESS=mongodb
+ENV REDIS_ADDRESS=redis://redis:6379
 # Run the app when the container launches
 CMD ["node", "index"]

@@ -16,9 +16,10 @@ const Queue = require("bee-queue");
 const { chmod } = require('fs');
 const redis = require("redis")
 const { sleep } = require('../gameFunctions/helperFunctions/scriptHelpers')
+const {mongoDbClient} = require("../backendFunctions/mongoHelpers")
 
 // Setup bee-queue for commands
-const queueConfig = { redis: "redis://redis:6379" }
+const queueConfig = { redis: process.env.REDIS_ADDRESS || "http://127.0.0.1:6379" }
 const commandQueue = new Queue('command', queueConfig)
 commandQueue.process(async (job, done) => {
     console.log("\x1b[36m", job.data.userId + ": " + job.data.command,)
@@ -31,11 +32,19 @@ commandQueue.process(async (job, done) => {
     };
 })
 
+commandQueue.on('failed', (err) => {
+    console.log(`A queue error happened: ${err.options.stacktraces}`);
+  });
+
 // setup bee-queue for user creation
 const userCreateQueue = new Queue('userCreate', queueConfig)
 userCreateQueue.process(async (job, done) => {
     await createPerson(job.data)
 })
+
+userCreateQueue.on('failed', (err) => {
+    console.log(`A queue error happened: ${err.options.stacktraces}`);
+  });
 
 
 async function setupSocket() {
@@ -58,14 +67,14 @@ async function setupSocket() {
                 description: "It's your friend " + textHelpers.capitalizeFirstLetter(userName) + ".",
                 userId: userId
             }).save()
-
+            const client = await mongoDbClient()
             await sleep(500)
-
-            const roomObj = await getObjs.getRoomObjByRoomName("mud_bedroom")
+            const roomObj = await getObjs.getRoomObjByRoomName(client, "mud_bedroom")
             const roomDescribe = await lookFunctions[roomObj.look](userId, roomObj)
             const message = "<br><b>" + textHelpers.capitalizeFirstLetter(roomObj.roomTitle) + "</b><br>" + roomDescribe
             io.to(userId).emit('chat message', helpResponse)
             io.to(userId).emit('chat message', message)
+            await client.close()
         });
 
         await socket.on('chat message', async (msg) => {
@@ -77,28 +86,32 @@ async function setupSocket() {
         await socket.on('disconnect', async () => {
             if (socket.userId) {
                 console.log('user disconnected: ' + socket.userId);
-                const userName = await getUsers.getUserNameByUserId(socket.userId)
+                const client = await mongoDbClient()
+                const userName = await getUsers.getUserNameByUserId(client, socket.userId)
                 await io.to('lobby').emit('chat message', textHelpers.capitalizeFirstLetter(userName) + " has disconnected.")
 
                 // move all items in user inventory to ground
-                const userInv = await getObjs.getAllObjectsInInventory(socket.userId)
-                const roomName = await getUsers.getUserRoomByUserId(socket.userId)
-                const floorObjList = await getObjs.getAllObjsByNameInRoom("floor", roomName)
+                const userInv = await getObjs.getAllObjectsInInventory(client, socket.userId)
+                const roomName = await getUsers.getUserRoomByUserId(client, socket.userId)
+                
+                const floorObjList = await getObjs.getAllObjsByNameInRoom(client, "floor", roomName)
+                
                 let floorObj = floorObjList[0]
                 for (let i = 0; i < userInv.length; i++) {
                     // Add items to floor container
                     await floorObj.contains.push(userInv[i])
-                    await setObjs.setObjectPropertyByDbIdAndRoomName(floorObj._id, roomName, 'contains', floorObj.contains)
+                    await setObjs.setObjectPropertyByDbIdAndRoomName(client, floorObj._id, roomName, 'contains', floorObj.contains)
                     // set items as visible
-                    await setObjs.setObjectPropertyByDbIdAndRoomName(userInv[i]._id, "userInventory_" + socket.userId, 'visible', true)
+                    await setObjs.setObjectPropertyByDbIdAndRoomName(client, userInv[i]._id, "userInventory_" + socket.userId, 'visible', true)
                     // move items from user inventory to room 
-                    await moveObjs.moveObjectToAnotherDb(userInv[i]._id, "userInventory_" + socket.userId, roomName)
+                    await moveObjs.moveObjectToAnotherDb(client, userInv[i]._id, "userInventory_" + socket.userId, roomName)
                     // add container obj id to floors "inside" property
-                    await setObjs.setObjectPropertyByDbIdAndRoomName(userInv[i]._id, roomName, 'inside', String(floorObj._id))
+                    await setObjs.setObjectPropertyByDbIdAndRoomName(client, userInv[i]._id, roomName, 'inside', String(floorObj._id))
                 }
-
+                
                 // Delete person
-                await deletePerson(socket.userId)
+                await deletePerson(client, socket.userId)
+                await client.close()
                 await socket.leave(socket.userId)
                 socket.userId = ""
             }
@@ -109,13 +122,15 @@ async function setupSocket() {
         });
 
         await socket.on('userquery', async (queryInfo) => {
-            const userObjList = await getObjs.getAllPeopleInRoom("mud_bedroom")
+            const client = await mongoDbClient()
+            const userObjList = await getObjs.getAllPeopleInRoom(client, "mud_bedroom")
             const userNameList = userObjList.map((obj) => { return obj.names[0] })
             if (userNameList.includes(queryInfo[0].toLowerCase())) {
                 await io.emit('query_' + queryInfo[1], 'duplicate')
             } else {
                 await io.emit('query_' + queryInfo[1], 'no_duplicate')
             }
+            await client.close()
         });
     });
 

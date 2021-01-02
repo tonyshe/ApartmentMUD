@@ -3,7 +3,7 @@ const getObjs = require("./getObjectFunctions")
 const setObjs = require("./setObjectFunctions")
 const getUsers = require("../userFunctions/getUserFunctions")
 
-async function moveObjectToAnotherDb(objId, fromDb, toDb) {
+async function moveObjectToAnotherDb(client, objId, fromDb, toDb) {
     /**
      * Moves an object from on db to another
      * @param {String} objId - DB id of the object to move
@@ -11,41 +11,37 @@ async function moveObjectToAnotherDb(objId, fromDb, toDb) {
      * @param {String} toDb - Name of the db to move to  (does not need to exist yet)
      * @return {String} Name of the collection that the obj is now in (should be the same as from db)
      */
-    const [obj, collName] = await getObjs.getObjByDbIdAndRoom(objId, fromDb)
-    const [fromDatabase,fromClient] = await mongoDbClientConnect("mongodb://" + global.mongoDbAddress + ":27017/", fromDb)
-    const [toDatabase,toClient] = await mongoDbClientConnect("mongodb://" + global.mongoDbAddress + ":27017/", toDb)
+    const [obj, collName] = await getObjs.getObjByDbIdAndRoom(client, objId, fromDb)
+    const fromDatabase = client.db(fromDb)
+    const toDatabase= client.db(toDb)
     console.log("Moving " + obj.names[0] + " from " + fromDb + " to " + toDb)
     await fromDatabase.collection(collName).deleteOne(obj)
     await toDatabase.collection(collName).insertOne(obj)
 
-    await fromClient.close()
-    await toClient.close()
     return collName
 }
 
-async function moveUserIdToAnotherRoom(userId, toRoomName) {
+async function moveUserIdToAnotherRoom(client, userId, toRoomName) {
     /**
      * Moves a user from one room db to another. Also updates the user map with the new room
      * @param {String} userId - userID of the user to move
      * @param {String} toRoomName - room to move the user to
      */
-    // Delete the user from the current room
-    let fromRoomName = await getUsers.getUserRoomByUserId(userId)
+    // Delete the user from the current rooms
+    let fromRoomName = await getUsers.getUserRoomByUserId(client, userId)
     console.log("Moving " + userId + " from " + fromRoomName + " to " + toRoomName)
     
-    let userDbId = await getUsers.getUserDbIdByUserId(userId)
-    let [userObj, collName] = await getObjs.getObjByDbIdAndRoom(userDbId, fromRoomName)
-    const [fromDatabase,fromClient] = await mongoDbClientConnect("mongodb://" + global.mongoDbAddress + ":27017/", fromRoomName)
+    let userDbId = await getUsers.getUserDbIdByUserId(client, userId)
+    let [userObj, collName] = await getObjs.getObjByDbIdAndRoom(client, userDbId, fromRoomName)
+    const fromDatabase = client.db(fromRoomName)
     await fromDatabase.collection(collName).deleteOne(userObj)
-    await fromClient.close()
 
     // Add user into new room
-    const [toDatabase,toClient] = await mongoDbClientConnect("mongodb://" + global.mongoDbAddress + ":27017/", toRoomName)
+    const toDatabase = client.db(toRoomName)
     await toDatabase.collection(collName).insertOne(userObj)
-    await toClient.close()
     
     // update the user map db
-    await setObjs.setUserRoomByUserId(userId, toRoomName)
+    await setObjs.setUserRoomByUserId(client, userId, toRoomName)
 }
 
 module.exports = {

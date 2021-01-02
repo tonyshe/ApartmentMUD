@@ -4,6 +4,7 @@ const getUsers = require("../userFunctions/getUserFunctions")
 const { describeFunctions } = require("../describeFunctions/describeFunctions")
 const { response } = require("express")
 const textHelpers = require("../helperFunctions/textHelpers")
+const {mongoDbClient} = require("../../backendFunctions/mongoHelpers")
 
 async function examineObject(roomName, userId, comArr) {
     /**
@@ -13,6 +14,7 @@ async function examineObject(roomName, userId, comArr) {
      * @param {[String]} comArr - Array of text commands from the user
      * @return {String: [String]} - Obj containing message: [userid] keypairs. consumed by the socket handler to give custom messages to users
      */
+    const client = await mongoDbClient()
 
     if (comArr.length === 1) {
         return { ["Please specify something to examine."]: [userId] }
@@ -23,14 +25,16 @@ async function examineObject(roomName, userId, comArr) {
     const selfWords = ["me", "myself", "self", "yourself", "you", "i"]
 
     if (selfWords.includes(objName)) {
-        const userName = await getUsers.getUserNameByUserId(userId)
+        const userName = await getUsers.getUserNameByUserId(client, userId)
         return { ["Hey look it's you, " + textHelpers.capitalizeFirstLetter(userName) + "."]: [userId] }
     }
 
     // Search all documents in all collections for a match. Create an array of matching objects
-    let foundObjs = await getObjs.getAllVisibleObjsInRoomByName(objName, roomName)
-    foundObjs = foundObjs.concat(await getObjs.getAllObjsByNameInInventory(objName, userId))
+    
+    let foundObjs = await getObjs.getAllVisibleObjsInRoomByName(client, objName, roomName)
+    foundObjs = foundObjs.concat(await getObjs.getAllObjsByNameInInventory(client, objName, userId))
 
+    await client.close()
     // Logic depending on how many objects are found
     if (foundObjs.length === 0) {
         return { ["You don't see that."]: [userId] }

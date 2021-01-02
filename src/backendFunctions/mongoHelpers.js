@@ -19,6 +19,14 @@ async function mongoDbClientConnect(url, roomName) {
     return [database, client]
 }
 
+async function mongoDbClient() {
+    const url = "mongodb://" + global.mongoDbAddress + ":27017/"
+    const client = new MongoClient(url, {useNewUrlParser: true, useUnifiedTopology: true})
+    await client.connect()
+    return client
+}
+
 module.exports = {
-    mongoDbClientConnect
+    mongoDbClientConnect,
+    mongoDbClient
 }
