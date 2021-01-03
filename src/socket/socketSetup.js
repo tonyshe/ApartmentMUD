@@ -13,10 +13,8 @@ const textHelpers = require("../gameFunctions/helperFunctions/textHelpers")
 const { lookFunctions } = require("../gameFunctions/describeFunctions/describeFunctions")
 const { helpResponse } = require("../gameFunctions/actions/showHelp")
 const Queue = require("bee-queue");
-const { chmod } = require('fs');
-const redis = require("redis")
 const { sleep } = require('../gameFunctions/helperFunctions/scriptHelpers')
-const {mongoDbClient} = require("../backendFunctions/mongoHelpers")
+const { mongoDbClient } = require("../backendFunctions/mongoHelpers");
 
 // Setup bee-queue for commands
 const queueConfig = { redis: process.env.REDIS_ADDRESS || "http://127.0.0.1:6379" }
@@ -27,14 +25,14 @@ commandQueue.process(async (job, done) => {
     let returnMsgList = Object.entries(returnMsg)
     for (let i = 0; i < returnMsgList.length; i++) {
         for (let j = 0; j < returnMsgList[i][1].length; j++) {
-            await io.to(returnMsgList[i][1][j]).emit('chat message', returnMsgList[i][0])
+            await io.to(returnMsgList[i][1][j]).emit('response message', returnMsgList[i][0])
         }
     };
 })
 
 commandQueue.on('failed', (err) => {
     console.log(`A queue error happened: ${err.options.stacktraces}`);
-  });
+});
 
 // setup bee-queue for user creation
 const userCreateQueue = new Queue('userCreate', queueConfig)
@@ -44,7 +42,24 @@ userCreateQueue.process(async (job, done) => {
 
 userCreateQueue.on('failed', (err) => {
     console.log(`A queue error happened: ${err.options.stacktraces}`);
-  });
+});
+
+// setup bee-queue for chat
+const chatQueue = new Queue('chat', queueConfig)
+chatQueue.process(async (job, done) => {
+    const client = await mongoDbClient()
+    console.log(job.data.userId)
+    getUsers.get
+    const roomName = await getUsers.getUserRoomFriendlyNameByUserId(client, job.data.userId)
+    const roomObj = await getObjs.getRoomObjByRoomName(client, roomName)
+    client.close()
+    const chatString = "<b>" + textHelpers.capitalizeFirstLetter(job.data.userName) + " (" + roomObj.roomTitle + "): </b>" + job.data.message
+    await io.emit('chat reply', chatString)
+})
+
+chatQueue.on('failed', (err) => {
+    console.log(`A queue error happened: ${err.options.stacktraces}`);
+});
 
 
 async function setupSocket() {
@@ -57,7 +72,7 @@ async function setupSocket() {
 
             await socket.join(userId)
             socket.room = "lobby"
-            io.to('lobby').emit('chat message', textHelpers.capitalizeFirstLetter(userName) + " has connected.")
+            io.to('lobby').emit('response', textHelpers.capitalizeFirstLetter(userName) + " has connected.")
             await socket.join('lobby')
 
             await userCreateQueue.createJob({
@@ -72,15 +87,23 @@ async function setupSocket() {
             const roomObj = await getObjs.getRoomObjByRoomName(client, "mud_bedroom")
             const roomDescribe = await lookFunctions[roomObj.look](userId, roomObj)
             const message = "<br><b>" + textHelpers.capitalizeFirstLetter(roomObj.roomTitle) + "</b><br>" + roomDescribe
-            io.to(userId).emit('chat message', helpResponse)
-            io.to(userId).emit('chat message', message)
+            io.to(userId).emit('response message', helpResponse)
+            io.to(userId).emit('response message', message)
             await client.close()
         });
 
-        await socket.on('chat message', async (msg) => {
+        await socket.on('command message', async (msg) => {
             // msg is an array of [user submitted message, userid]
             // send command to bee-queue
-            await commandQueue.createJob({ command: msg[0], userId: msg[1] }).save()
+            const cmdMessage = msg[0].replace(/</g, "&lt;").replace(/>/g, "&gt;")
+            await commandQueue.createJob({ command: cmdMessage, userId: msg[1] }).save()
+        });
+
+        await socket.on('chat message', async (msg) => {
+            // msg is an array of [user submitted message, username, userid]
+            // send command to bee-queue
+            const chatMessage = msg[0].replace(/</g, "&lt;").replace(/>/g, "&gt;")
+            await chatQueue.createJob({ message: chatMessage, userName: msg[1], userId: msg[2] }).save()
         });
 
         await socket.on('disconnect', async () => {
@@ -88,14 +111,14 @@ async function setupSocket() {
                 console.log('user disconnected: ' + socket.userId);
                 const client = await mongoDbClient()
                 const userName = await getUsers.getUserNameByUserId(client, socket.userId)
-                await io.to('lobby').emit('chat message', textHelpers.capitalizeFirstLetter(userName) + " has disconnected.")
+                await io.to('lobby').emit('response message', textHelpers.capitalizeFirstLetter(userName) + " has disconnected.")
 
                 // move all items in user inventory to ground
                 const userInv = await getObjs.getAllObjectsInInventory(client, socket.userId)
                 const roomName = await getUsers.getUserRoomByUserId(client, socket.userId)
-                
+
                 const floorObjList = await getObjs.getAllObjsByNameInRoom(client, "floor", roomName)
-                
+
                 let floorObj = floorObjList[0]
                 for (let i = 0; i < userInv.length; i++) {
                     // Add items to floor container
@@ -108,7 +131,7 @@ async function setupSocket() {
                     // add container obj id to floors "inside" property
                     await setObjs.setObjectPropertyByDbIdAndRoomName(client, userInv[i]._id, roomName, 'inside', String(floorObj._id))
                 }
-                
+
                 // Delete person
                 await deletePerson(client, socket.userId)
                 await client.close()

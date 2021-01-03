@@ -21,10 +21,12 @@ function SplashScreen({ mudLogin }) {
 
     async function sendUserNameForValidation(e) {
         e.preventDefault()
-        if (userName.length > 3) {
-            socket.emit('userquery', [userName, queryId])
-        } else {
+        if (userName.length < 3) {
             setWarningText('Username is too short!')
+        } else if (userName.length > 25) {
+            setWarningText('Username is too long!')
+        } else {
+            socket.emit('userquery', [userName, queryId])
         }
     }
 

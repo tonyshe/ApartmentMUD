@@ -1,0 +1,29 @@
+body {
+    height: 100%;
+    background-color: #FFFFFF;
+    color: black;
+}
+
+.message {
+    padding-left: 6px;
+    padding-right: 6px;
+    font-family: "Tahoma";
+    font-size: 14px;
+}
+
+.submitForm {
+    padding-left: 6px;
+    padding-right: 6px;
+    padding-bottom: 16px;
+}
+
+.inputForm {
+    padding-left: 6px;
+    padding-right: 6px;
+    border: 0;
+    outline: none;
+    font-family: "Tahoma";
+    font-size: 14px;
+    background: transparent;
+    color: black;
+}
