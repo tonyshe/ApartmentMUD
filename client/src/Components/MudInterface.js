@@ -1,5 +1,6 @@
 import socketIOClient from "socket.io-client"
 import React, { useEffect } from 'react'
+import './Styles/MudInterface.css'
 
 
 function MudInterface({ username, userId }) {
@@ -7,10 +8,10 @@ function MudInterface({ username, userId }) {
     const socket = socketIOClient(ENDPOINT);
 
     useEffect(() => {
-            socket.on('connect', () => {
-                console.log("attempting to connect")
-                socket.emit('userinfo', [userId, username])
-            })
+        socket.on('connect', () => {
+            console.log("attempting to connect")
+            socket.emit('userinfo', [userId, username])
+        })
 
     })
 
@@ -23,25 +24,27 @@ function MudInterface({ username, userId }) {
     })
 
     useEffect(() => {
-        socket.on('chat message', function (msg) {
+        socket.on('response message', function (msg) {
             // determine if the user was at the bottom of the page before a new message is given
             let atBottom = false
             // add new message
-            if (window.pageYOffset + window.innerHeight > window.document.body.offsetHeight - 50 ) { atBottom = true}
+            let messageDiv = document.getElementById('messageBox')
+            if (messageDiv.scrollTop + messageDiv.offsetHeight > messageDiv.scrollHeight - 50) { atBottom = true }
             newMessage(msg);
             if (atBottom) {
-                window.scrollTo({ behavior: "smooth", top: window.document.body.offsetHeight })
+                messageDiv.scrollTo({ behavior: "smooth", top: messageDiv.scrollHeight })
             }
         });
     })
 
     async function commandSubmit(e) {
         e.preventDefault();
-        const message = e.target[0].value
+        const message = e.target[0].value.replace(/</g, "&lt;").replace(/>/g, "&gt;")
         e.target.reset()
-        socket.emit('chat message', [message, userId])
+        socket.emit('command message', [message, userId])
         newMessage(">> " + message, true);
-        window.scrollTo({ behavior: "smooth", top: window.document.body.offsetHeight })
+        let messageDiv = document.getElementById('messageBox')
+        messageDiv.scrollTo({ behavior: "smooth", top: messageDiv.scrollHeight })
     }
 
     function newMessage(msg, grey = false) {
@@ -62,8 +65,8 @@ function MudInterface({ username, userId }) {
     }
 
     return (
-        <div>
-            <div id="messageBox">
+        <div className="gamewindow">
+            <div className="messagewindow" id="messageBox">
                 <div className="message">
                     <p>
                         <b>Welcome to the interactive text adventure house!</b>
@@ -73,7 +76,7 @@ function MudInterface({ username, userId }) {
                     <hr />
                 </div>
             </div>
-            <form className="submitForm" id="command" action="" autoComplete="off" onSubmit={commandSubmit}>
+            <form className="submitform" id="command" action="" autoComplete="off" onSubmit={commandSubmit}>
                 <b>&gt;&gt;</b>
                 <input
                     size={64}
