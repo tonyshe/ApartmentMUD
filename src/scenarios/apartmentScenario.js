@@ -307,7 +307,7 @@ async function apartmentScenario() {
     await createContainerObject({
         roomName: "mud_bathroom",
         names: ["toilet"],
-        description: "A drawer attached to the desk.",
+        description: "A white porcelain toilet made by TOTO.",
         open: false,
         closeable: true,
         preposition: 'in',
